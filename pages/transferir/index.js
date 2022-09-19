@@ -1,13 +1,13 @@
 import Head from "next/head";
-import Button from "../components/Button";
-import Footer from "../components/Footer";
-import styles from "../styles/Home.module.css";
+import Button from "../../components/Button";
+import Footer from "../../components/Footer";
+import styles from "../../styles/Home.module.css";
 
 export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Transfira Playlists!</title>
+        <title>Transfira Playlits! - Transferir Playlists</title>
         <meta
           name="description"
           content="Transfira músicas do Spotify e Deezer"

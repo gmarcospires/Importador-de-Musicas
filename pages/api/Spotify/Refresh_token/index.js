@@ -1,0 +1,47 @@
+export default function handler(req, res) {
+  // requesting access token from refresh token
+  const buffer = new Buffer.from(
+    client_id + ":" + client_secret,
+    "utf8"
+  ).toString("base64");
+  var refresh_token = req.query.refresh_token;
+
+  const params = new URLSearchParams([
+    ["refresh_token", refresh_token],
+    ["grant_type", "refresh_token"],
+  ]);
+  var options = {
+    body: params,
+    headers: {
+      Authorization: "Basic " + buffer,
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+    },
+    method: "POST",
+  };
+
+  fetch("https://accounts.spotify.com/api/token", options)
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw new Error(
+          JSON.stringify({
+            status: response.status,
+            statusText: response.statusText,
+          })
+        );
+      }
+    })
+    .then((jsonResponse) => {
+      var access_token = jsonResponse.access_token;
+      res.status(200).json({
+        access_token: access_token,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err.message,
+      });
+    });
+}

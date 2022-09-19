@@ -1,0 +1,45 @@
+export default function handler(req, res) {
+  const access_token = req.body.access_token;
+  const playlist_id = req.body.playlist_id;
+  const offset = req.body.offset || 0;
+  const limit = req.body.limit || 20;
+
+  const options = {
+    headers: {
+      Authorization: "Bearer " + access_token,
+    },
+    method: "GET",
+  };
+  const params = new URLSearchParams([
+    ["offset", offset],
+    ["limit", limit],
+  ]);
+
+  const url =
+    "https://api.spotify.com/v1/playlists/" +
+    playlist_id +
+    "?" +
+    params.toString();
+  fetch(url, options)
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw new Error(
+          JSON.stringify({
+            status: response.status,
+            statusText: response.statusText,
+          })
+        );
+      }
+    })
+    .then((jsonResponse) => {
+      res.status(200).json(jsonResponse);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err.message,
+      });
+    });
+}
