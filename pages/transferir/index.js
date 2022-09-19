@@ -21,7 +21,7 @@ export default function Home() {
         <p className={styles.description}>Transfira Playlits facilmente!</p>
 
         <div className={styles.grid}>
-          <Button href="/transferir" className={styles.card}>
+          <Button href="/api/Spotify/Login" className={styles.card}>
             Comece agora!
           </Button>
         </div>

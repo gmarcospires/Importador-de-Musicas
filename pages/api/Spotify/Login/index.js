@@ -1,5 +1,9 @@
-import { generateRandomString } from "../../../js/func.js";
-import { client_id, redirect_uri, stateKey } from "../../../js/spotify_auth.js";
+import { generateRandomString } from "../../../../js/func.js";
+import {
+  client_id,
+  redirect_uri,
+  stateKey,
+} from "../../../../js/spotify_auth.js";
 
 const scope = [
   "ugc-image-upload",
