@@ -1,3 +1,5 @@
+import { client_id, redirect_uri, stateKey } from "../../../js/spotify_auth.js";
+
 export default function handler(req, res) {
   if (req.method !== "GET") {
     res.status(400).json({
