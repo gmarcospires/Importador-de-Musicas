@@ -1,4 +1,9 @@
 export default function handler(req, res) {
+  if (req.method !== "GET") {
+    res.status(400).json({
+      error: "Invalid request method",
+    });
+  }
   // requesting access token from refresh token
   const buffer = new Buffer.from(
     client_id + ":" + client_secret,

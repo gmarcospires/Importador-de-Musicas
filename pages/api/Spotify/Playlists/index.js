@@ -1,4 +1,9 @@
 export default function handler(req, res) {
+  if (req.method !== "POST") {
+    res.status(400).json({
+      error: "Invalid request method",
+    });
+  }
   const access_token = req.body.access_token;
   const offset = req.body.offset || 0;
   const limit = req.body.limit || 20;

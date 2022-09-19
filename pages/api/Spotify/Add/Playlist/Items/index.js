@@ -1,28 +1,30 @@
+//Request to add items to playlist
+//URI type -> https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids
 export default function handler(req, res) {
+  if (req.method !== "POST") {
+    res.status(400).json({
+      error: "Invalid request method",
+    });
+  }
   const access_token = req.body.access_token;
   const playlist_id = req.body.playlist_id;
-  const offset = req.body.offset || 0;
-  const limit = req.body.limit || 20;
+  const uris = req.body.uris;
 
-  const options = {
+  const authOptions = {
     headers: {
       Authorization: "Bearer " + access_token,
+      "Content-Type": "application/json",
     },
-    method: "GET",
+    method: "POST",
+    body: JSON.stringify({
+      uris: [uris],
+    }),
   };
-  const params = new URLSearchParams([
-    ["offset", offset],
-    ["limit", limit],
-  ]);
+  const url = "https://api.spotify.com/v1/playlists/" + playlist_id + "/tracks";
 
-  const url =
-    "https://api.spotify.com/v1/playlists/" +
-    playlist_id +
-    "/tracks?" +
-    params.toString();
-  fetch(url, options)
+  fetch(url, authOptions)
     .then((response) => {
-      if (response.status === 200) {
+      if (response.status === 201 || response.status === 200) {
         return response.json();
       } else {
         throw new Error(

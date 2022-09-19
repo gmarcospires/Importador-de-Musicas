@@ -5,30 +5,29 @@ export default function handler(req, res) {
     });
   }
   const access_token = req.body.access_token;
-  const user_id = req.body.user_id;
-  const name = req.body.playlist_name;
-  const is_public = req.body.is_public || true;
-  const collaborative = req.body.is_collaborative || false;
-  const description = req.body.playlist_description || "";
+  const playlist_id = req.body.playlist_id;
+  const offset = req.body.offset || 0;
+  const limit = req.body.limit || 20;
 
   const options = {
     headers: {
       Authorization: "Bearer " + access_token,
-      "Content-Type": "application/json",
     },
-    method: "POST",
-    body: JSON.stringify({
-      name: name,
-      public: is_public,
-      collaborative: collaborative,
-      description: description,
-    }),
+    method: "GET",
   };
+  const params = new URLSearchParams([
+    ["offset", offset],
+    ["limit", limit],
+  ]);
 
-  const url = "https://api.spotify.com/v1/users/" + user_id + "/playlists";
+  const url =
+    "https://api.spotify.com/v1/playlists/" +
+    playlist_id +
+    "/tracks?" +
+    params.toString();
   fetch(url, options)
     .then((response) => {
-      if (response.status === 201 || response.status === 200) {
+      if (response.status === 200) {
         return response.json();
       } else {
         throw new Error(

@@ -1,4 +1,9 @@
 export default function handler(req, res) {
+  if (req.method !== "GET") {
+    res.status(400).json({
+      error: "Invalid request method",
+    });
+  }
   // your application requests refresh and access tokens
   // after checking the state parameter
   var code = req.query.code || null;
@@ -17,7 +22,7 @@ export default function handler(req, res) {
       ["redirect_uri", redirect_uri],
       ["grant_type", "authorization_code"],
     ]);
-    
+
     const authOptions = {
       body: params,
       headers: {

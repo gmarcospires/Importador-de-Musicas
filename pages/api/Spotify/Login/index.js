@@ -23,6 +23,11 @@ let scope = [
 ];
 
 export default function handler(req, res) {
+  if (req.method !== "GET") {
+    res.status(400).json({
+      error: "Invalid request method",
+    });
+  }
   let state = generateRandomString(16);
   res.cookie(stateKey, state, {
     maxAge: 24 * 60 * 60 * 1000,

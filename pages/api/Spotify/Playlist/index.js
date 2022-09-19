@@ -1,4 +1,9 @@
 export default function handler(req, res) {
+  if (req.method !== "POST") {
+    res.status(400).json({
+      error: "Invalid request method",
+    });
+  }
   const access_token = req.body.access_token;
   const playlist_id = req.body.playlist_id;
   const offset = req.body.offset || 0;

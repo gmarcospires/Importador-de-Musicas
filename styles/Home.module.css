@@ -126,4 +126,11 @@
   .logo img {
     filter: invert(1);
   }
+  .card:hover,
+  .card:focus,
+  .card:active {
+    color: initial;
+    border-color: #0004f3;
+    background-color: rgb(161, 160, 160);
+  }  
 }
