@@ -1,6 +1,6 @@
 import { generateRandomString } from "../../../js/func.js";
 
-let scope = [
+const scope = [
   "ugc-image-upload",
   "user-read-playback-state",
   "user-modify-playback-state",
