@@ -1,6 +1,14 @@
-import { client_id, redirect_uri, stateKey } from "../../../js/spotify_auth.js";
+import {
+  client_id,
+  redirect_uri,
+  client_secret,
+  stateKey,
+} from "../../../../js/spotify_auth.js";
+import { getCookie, setCookie, deleteCookie } from "cookies-next";
 
 export default function handler(req, res) {
+  console.log("aqui");
+
   if (req.method !== "GET") {
     res.status(400).json({
       error: "Invalid request method",
@@ -10,11 +18,11 @@ export default function handler(req, res) {
   // after checking the state parameter
   var code = req.query.code || null;
   var state = req.query.state || null;
-  var storedState = req.cookies ? req.cookies[stateKey] : null;
+  var storedState = getCookie(stateKey, { req, res });
   if (state === null || state !== storedState) {
     res.status(500).json({ error: "state_mismatch" });
   } else {
-    res.clearCookie(stateKey);
+    deleteCookie(stateKey, { req, res });
     const buffer = new Buffer.from(
       client_id + ":" + client_secret,
       "utf8"
@@ -51,11 +59,6 @@ export default function handler(req, res) {
         var access_token = jsonResponse.access_token;
         var refresh_token = jsonResponse.refresh_token;
 
-        // const params = new URLSearchParams([
-        //   ["access_token", access_token],
-        //   ["refresh_token", refresh_token],
-        // ]);
-        // res.redirect("/#" + params.toString());
         res.status(200).json({
           access_token: access_token,
           refresh_token: refresh_token,

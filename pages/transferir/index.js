@@ -21,8 +21,29 @@ export default function Home() {
         <p className={styles.description}>Transfira Playlits facilmente!</p>
 
         <div className={styles.grid}>
-          <Button href="/api/Spotify/Login" className={styles.card}>
-            Comece agora!
+          <Button
+            href=""
+            onClick={() => {
+              fetch("/api/spotify/login")
+                .then((response) => {
+                  console.log(response);
+                  if (response.status === 200) {
+                    return response.json();
+                  } else {
+                    console.log("Erro ao fazer login");
+                  }
+                })
+                .then((jsonResponse) => {
+                  window.localStorage.setItem("spotfy", jsonResponse);
+                  console.log(window.localStorage.getItem("spotfy"));
+                });
+              // .catch((error) => {
+              //   console.log(error);
+              // });
+            }}
+            className={styles.card}
+          >
+            Logar
           </Button>
         </div>
       </main>

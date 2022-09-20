@@ -4,6 +4,7 @@ import {
   redirect_uri,
   stateKey,
 } from "../../../../js/spotify_auth.js";
+import { setCookie } from "cookies-next";
 
 const scope = [
   "ugc-image-upload",
@@ -33,11 +34,9 @@ export default function handler(req, res) {
       error: "Invalid request method",
     });
   }
+
   let state = generateRandomString(16);
-  res.cookie(stateKey, state, {
-    maxAge: 24 * 60 * 60 * 1000,
-    httpOnly: true,
-  });
+  setCookie(stateKey, state, { req, res, maxAge: 24 * 60 * 60 * 1000 });
   const params = new URLSearchParams([
     ["response_type", "code"],
     ["client_id", client_id],
