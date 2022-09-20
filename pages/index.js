@@ -1,7 +1,7 @@
-import Head from "next/head";
-import Button from "../components/Button";
-import Footer from "../components/Footer";
-import styles from "../styles/Home.module.css";
+import Head from 'next/head';
+import Button from '../components/Button';
+import Footer from '../components/Footer';
+import styles from '../styles/Home.module.css';
 
 export default function Home() {
   return (
@@ -21,7 +21,7 @@ export default function Home() {
         <p className={styles.description}>Transfira Playlits facilmente!</p>
 
         <div className={styles.grid}>
-          <Button href="/transferir" className={styles.card}>
+          <Button href="/inicio" className={styles.card}>
             Comece agora!
           </Button>
         </div>
