@@ -36,7 +36,12 @@ export default function handler(req, res) {
   }
 
   let state = generateRandomString(16);
-  setCookie(stateKey, state, { req, res, maxAge: 24 * 60 * 60 * 1000 });
+  setCookie(stateKey, state, {
+    req,
+    res,
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  });
   const params = new URLSearchParams([
     ['response_type', 'code'],
     ['client_id', client_id],

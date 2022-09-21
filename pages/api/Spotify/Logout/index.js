@@ -1,6 +1,9 @@
+import { deleteCookie } from 'cookies-next';
+import { stateKey } from '../../../../js/spotify_auth.js';
+
 export default function handler(req, res) {
-  req.session = null;
-  res.clearCookie();
-  res.redirect("/");
-  res.redirect("https://accounts.spotify.com/authorize?" + params.toString());
+  deleteCookie('access_token', { req, res });
+  deleteCookie('refresh_token', { req, res });
+  deleteCookie(stateKey, { req, res });
+  res.status(200).json({ message: 'Logged out' });
 }
