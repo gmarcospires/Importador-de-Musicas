@@ -2,9 +2,22 @@ import Head from 'next/head';
 import Button from '../../components/Button';
 import Footer from '../../components/Footer';
 import styles from '../../styles/Home.module.css';
-import { Box } from '@mantine/core';
+import { Box, Select } from '@mantine/core';
+import { servicos } from '../../js/servicos';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
+  const [valueDestiny, setValueDestiny] = useState('');
+  const [valueOrigin, setValueOrigin] = useState('');
+
+  useEffect(() => {
+    console.log('destiny', valueDestiny);
+  }, [valueDestiny]);
+
+  useEffect(() => {
+    console.log('origin', valueOrigin);
+  }, [valueOrigin]);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -17,26 +30,40 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
+        <h1>Transferência</h1>
         <Box
           sx={(theme) => ({
             backgroundColor:
               theme.colorScheme === 'dark'
-                ? theme.colors.dark[6]
-                : theme.colors.gray[0],
+                ? theme.colors.dark[5]
+                : theme.colors.gray[1],
             textAlign: 'center',
             padding: theme.spacing.xl,
             borderRadius: theme.radius.md,
-            cursor: 'pointer',
-
-            '&:hover': {
-              backgroundColor:
-                theme.colorScheme === 'dark'
-                  ? theme.colors.dark[5]
-                  : theme.colors.gray[1],
-            },
           })}
         >
-          Box lets you add inline styles with sx prop
+          <div className={styles.grid}>
+            <Select
+              label='Selecione a Origem'
+              placeholder='Selecione'
+              data={servicos}
+              style={{ padding: '10px' }}
+              value={valueOrigin}
+              onChange={setValueOrigin}
+              searchable
+              required
+            />
+            <Select
+              label='Selecione o Destino'
+              placeholder='Selecione'
+              data={servicos}
+              style={{ padding: '10px' }}
+              value={valueDestiny}
+              onChange={setValueDestiny}
+              searchable
+              required
+            />
+          </div>
         </Box>
       </main>
 
