@@ -15,16 +15,16 @@ export default function Home(props) {
   useEffect(() => {
     cookies.current = props.cookies;
     if (cookies.current != undefined) {
-      if (cookies.current.access_token && cookies.current.access_token_deezer) {
-        setAlterou(false);
-      } else {
-        if (cookies.current.access_token) {
-          setAlterou(true);
-        }
-        if (cookies.current.access_token_deezer) {
-          setAlterou(true);
-        }
+      // if (cookies.current.access_token && cookies.current.access_token_deezer) {
+      //   setAlterou(false);
+      // } else {
+      if (cookies.current.access_token) {
+        setAlterou(true);
       }
+      if (cookies.current.access_token_deezer) {
+        setAlterou(true);
+      }
+      // }
     } else {
       setAlterou(false);
     }
@@ -70,10 +70,17 @@ export default function Home(props) {
             icon={<IconCheck size={18} />}
             color='teal'
             title='Sucesso!'
-            style={{ position: 'fixed', bottom: 100, right: 0, margin: 10 }}
+            style={{
+              position: 'fixed',
+              bottom: 100,
+              right: 0,
+              margin: 10,
+              height: 100,
+              width: 300,
+            }}
             closeButtonProps={{
               'aria-label': 'Hide notification',
-              title: 'Hide notification',
+              title: 'Fechar',
             }}
             onClose={() => setAlterou(false)}
           >
