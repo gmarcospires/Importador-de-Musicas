@@ -1,10 +1,12 @@
+import { getCookie } from 'cookies-next';
+
 export default function handler(req, res) {
   if (req.method !== "POST") {
     res.status(400).json({
       error: "Invalid request method",
     });
   }
-  const access_token = req.body.access_token;
+  const access_token = getCookie('access_token', { req, res }) || req.body.access_token;
   const offset = req.body.offset || 0;
   const limit = req.body.limit || 20;
 
@@ -34,11 +36,11 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      res.status(200).json(jsonResponse);
+       res.status(200).json(jsonResponse);
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({
+      return res.status(500).json({
         error: err.message,
       });
     });

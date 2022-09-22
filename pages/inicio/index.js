@@ -1,6 +1,4 @@
-import Head from 'next/head';
 import Button from '../../components/Button';
-import Footer from '../../components/Footer';
 import styles from '../../styles/Home.module.css';
 import React, { useRef, useEffect, Fragment, useState } from 'react';
 import { Notification } from '@mantine/core';
@@ -31,17 +29,6 @@ export default function Home(props) {
   }, [props.cookies]);
 
   return (
-    <>
-      <div className={styles.container}>
-        <Head>
-          <title>Transfira Playlits! - Transferir Playlists</title>
-          <meta
-            name='description'
-            content='Transfira músicas do Spotify e Deezer'
-          />
-          <link rel='icon' href='/favicon.ico' />
-        </Head>
-
         <main className={styles.main}>
           <h1 className={styles.title}>Transfira Playlists!</h1>
           <p className={styles.description}>Transfira Playlits facilmente!</p>
@@ -64,7 +51,7 @@ export default function Home(props) {
               </Button>
             ) : null}
           </div>
-        </main>
+        
         {alterou ? (
           <Notification
             icon={<IconCheck size={18} />}
@@ -87,9 +74,7 @@ export default function Home(props) {
             Login com sucesso!
           </Notification>
         ) : null}
-        <Footer name='Gmarcospires' href='https://github.com/gmarcospires' />
-      </div>
-    </>
+        </main>
   );
 }
 
