@@ -1,6 +1,6 @@
 import Button from '../../components/Button';
 import styles from '../../styles/Home.module.css';
-import { Box, Select, Loader, Grid, Group, Avatar, Text } from '@mantine/core';
+import { Box, Select, Loader, Grid, Group, Image, Text } from '@mantine/core';
 import { servicos } from '../../js/servicos';
 import { useState, useEffect, useRef, forwardRef } from 'react';
 
@@ -22,10 +22,10 @@ export default function Home() {
     ({ image, label, description, ...others }, ref) => (
       <div ref={ref} {...others}>
         <Group noWrap>
-          <Avatar src={image} size="sm" variant="outline" />
+          <Image withPlaceholder src={image} width={25} fit='cover' />
           <div>
-            <Text size="sm">{label}</Text>
-            <Text size="xs" color="dimmed">
+            <Text size='sm'>{label}</Text>
+            <Text size='xs' color='dimmed'>
               {description}
             </Text>
           </div>
@@ -42,9 +42,9 @@ export default function Home() {
 
     return await fetch(`api/${origem}/playlists`, options)
       .then((response) => {
-        if(response.status == 200) {
+        if (response.status == 200) {
           return response.json();
-        } else{
+        } else {
           new Error(response.json());
         }
       })
@@ -62,7 +62,7 @@ export default function Home() {
         return playlists;
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
       });
   }
 
@@ -96,7 +96,6 @@ export default function Home() {
     }
   }, [valueOrigin]);
 
-
   return (
     <main className={styles.main}>
       <h1>Transferência</h1>
@@ -111,35 +110,35 @@ export default function Home() {
           borderRadius: theme.radius.md,
         })}
       >
-        <Grid justify="center" align="center">
-          <Grid.Col span="auto">
+        <Grid justify='center' align='center'>
+          <Grid.Col span='auto'>
             <Select
-              label="Selecione a Origem"
-              id="origin"
+              label='Selecione a Origem'
+              id='origin'
               itemComponent={SelectItem}
-              placeholder="Selecione"
+              placeholder='Selecione'
               data={servicos}
               style={{ padding: '10px' }}
               value={valueOrigin}
               onChange={setValueOrigin}
-              transition="fade"
+              transition='fade'
               transitionDuration={80}
               searchable
               clearable
               required
             />
           </Grid.Col>
-          <Grid.Col span="auto">
+          <Grid.Col span='auto'>
             <Select
-              label="Selecione o Destino"
-              id="destiny"
-              placeholder="Selecione"
+              label='Selecione o Destino'
+              id='destiny'
+              placeholder='Selecione'
               itemComponent={SelectItem}
               data={servicos}
               style={{ padding: '10px' }}
               value={valueDestiny}
               onChange={setValueDestiny}
-              transition="fade"
+              transition='fade'
               transitionDuration={80}
               searchable
               clearable
@@ -147,23 +146,23 @@ export default function Home() {
             />
           </Grid.Col>
         </Grid>
-        <Grid justify="center" align="center">
-          <Grid.Col span="auto">
+        <Grid justify='center' align='center'>
+          <Grid.Col span='auto'>
             {loaderPlaylistOrigin && showplaylistOrigin ? (
-              <Loader size="lg" variant="dots" />
+              <Loader size='lg' variant='dots' />
             ) : null}
             {showplaylistOrigin && !loaderPlaylistOrigin ? (
               <Select
-                label="Playlist de Origem"
-                placeholder="Playlist"
-                id="playlistOrigin"
+                label='Playlist de Origem'
+                placeholder='Playlist'
+                id='playlistOrigin'
                 data={playlistsOrigin}
                 maxDropdownHeight={280}
                 style={{ padding: '10px' }}
                 value={plyalistOriginId}
                 onChange={setPlyalistOriginId}
-                transition="fade"
-                nothingFound="Sem dados"
+                transition='fade'
+                nothingFound='Sem dados'
                 transitionDuration={80}
                 searchable
                 clearable
@@ -173,22 +172,22 @@ export default function Home() {
               <div></div>
             )}
           </Grid.Col>
-          <Grid.Col span="auto">
+          <Grid.Col span='auto'>
             {loaderPlaylistDestiny && showplaylistDestiny ? (
-              <Loader size="lg" variant="dots" />
+              <Loader size='lg' variant='dots' />
             ) : null}
             {showplaylistDestiny && !loaderPlaylistDestiny ? (
               <Select
-                label="Playlist de Destino"
-                placeholder="Playlist"
-                id="playlistDestiny"
-                nothingFound="Sem dados"
+                label='Playlist de Destino'
+                placeholder='Playlist'
+                id='playlistDestiny'
+                nothingFound='Sem dados'
                 data={playlistsDestiny}
                 maxDropdownHeight={280}
                 style={{ padding: '10px' }}
                 value={plyalistDestinyId}
                 onChange={setPlyalistDestinyId}
-                transition="fade"
+                transition='fade'
                 transitionDuration={80}
                 searchable
                 clearable
