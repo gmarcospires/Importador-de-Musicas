@@ -1,0 +1,1 @@
+deezer/playlists = spotify/playlists
