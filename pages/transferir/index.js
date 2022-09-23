@@ -1,6 +1,17 @@
-import Button from '../../components/Button';
 import styles from '../../styles/Home.module.css';
-import { Box, Select, Loader, Grid, Group, Image, Text } from '@mantine/core';
+import {
+  Box,
+  Select,
+  Loader,
+  Grid,
+  Group,
+  Image,
+  Text,
+  Modal,
+  Button,
+  ActionIcon,
+} from '@mantine/core';
+import { IconPlus } from '@tabler/icons';
 import { servicos } from '../../js/servicos';
 import { useState, useEffect, useRef, forwardRef } from 'react';
 
@@ -17,6 +28,8 @@ export default function Home() {
 
   const [plyalistOriginId, setPlyalistOriginId] = useState('');
   const [plyalistDestinyId, setPlyalistDestinyId] = useState('');
+
+  const [opened, setOpened] = useState(false);
 
   const SelectItem = forwardRef(
     ({ image, label, description, ...others }, ref) => (
@@ -44,12 +57,10 @@ export default function Home() {
       .then((response) => {
         if (response.status == 200) {
           return response.json();
-        }
-        else if(response.status == 401) {
+        } else if (response.status == 401) {
           alert('Você precisa Logar novamente!');
           window.location.href = '/inicio';
-        }
-        else {
+        } else {
           new Error(response.json());
         }
       })
@@ -174,7 +185,7 @@ export default function Home() {
                 required
               />
             ) : (
-              <div></div>
+              null
             )}
           </Grid.Col>
           <Grid.Col span='auto'>
@@ -182,28 +193,44 @@ export default function Home() {
               <Loader size='lg' variant='dots' />
             ) : null}
             {showplaylistDestiny && !loaderPlaylistDestiny ? (
-              <Select
-                label='Playlist de Destino'
-                placeholder='Playlist'
-                id='playlistDestiny'
-                nothingFound='Sem dados'
-                data={playlistsDestiny}
-                maxDropdownHeight={280}
-                style={{ padding: '10px' }}
-                value={plyalistDestinyId}
-                onChange={setPlyalistDestinyId}
-                transition='fade'
-                transitionDuration={80}
-                searchable
-                clearable
-                required
-              />
+              <>
+                <Select
+                  label='Playlist de Destino'
+                  placeholder='Playlist'
+                  id='playlistDestiny'
+                  nothingFound='Sem dados'
+                  data={playlistsDestiny}
+                  maxDropdownHeight={280}
+                  style={{ padding: '10px' }}
+                  value={plyalistDestinyId}
+                  onChange={setPlyalistDestinyId}
+                  transition='fade'
+                  transitionDuration={80}
+                  searchable
+                  clearable
+                  required
+                />
+                {/* onClick={setOpened(true)} */}
+                <ActionIcon variant="outline" color="blue" >
+                  <IconPlus size={16}></IconPlus>
+                </ActionIcon>
+              </>
             ) : (
-              <div></div>
+              null
             )}
           </Grid.Col>
         </Grid>
+        {
+              (plyalistOriginId && plyalistDestinyId) ? (
+                <Button>Transferir</Button>
+              ) : (null)
+        }
       </Box>
+      {/* <Modal>
+        opened={opened}
+        onClose={() => setOpened(false)}
+        title="Introduce yourself!" teste
+      </Modal> */}
     </main>
   );
 }
