@@ -1,5 +1,5 @@
-import { client_id } from '../../../js/spotify_auth.js';
-import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+import { client_id, client_secret } from '../../../js/spotify_auth.js';
+import { getCookie, setCookie } from 'cookies-next';
 
 export default function handler(req, res) {
   if (req.method !== 'GET') {
@@ -12,7 +12,7 @@ export default function handler(req, res) {
     client_id + ':' + client_secret,
     'utf8'
   ).toString('base64');
-  var refresh_token = req.query.refresh_token;
+  var refresh_token = getCookie('refresh_token', { req, res }) || req.query.refresh_token;
 
   const params = new URLSearchParams([
     ['refresh_token', refresh_token],

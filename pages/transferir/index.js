@@ -44,7 +44,12 @@ export default function Home() {
       .then((response) => {
         if (response.status == 200) {
           return response.json();
-        } else {
+        }
+        else if(response.status == 401) {
+          alert('Você precisa Logar novamente!');
+          window.location.href = '/inicio';
+        }
+        else {
           new Error(response.json());
         }
       })

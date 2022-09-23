@@ -1,4 +1,4 @@
-import { getCookie } from 'cookies-next';
+import { getCookie, deleteCookie } from 'cookies-next';
 
 export default function handler(req, res) {
   if (req.method !== "POST") {
@@ -26,7 +26,14 @@ export default function handler(req, res) {
     .then((response) => {
       if (response.status === 200) {
         return response.json();
-      } else {
+      }
+      else if(response.status === 401) {
+        deleteCookie('access_token', { req, res });
+        res.status(401).json({
+          error: response.json(),
+        });
+      }
+      else {
         throw new Error(
           JSON.stringify({
             status: response.status,
