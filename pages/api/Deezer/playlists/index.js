@@ -6,7 +6,8 @@ export default function handler(req, res) {
       error: 'Invalid request method',
     });
   }
-  const access_token = getCookie('access_token_deezer', { req, res }) || req.body.access_token;
+  const access_token =
+    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
   const offset = req.body.offset || 0;
   const limit = req.body.limit || 20;
 

@@ -49,14 +49,12 @@ export default function handler(req, res) {
         setCookie('access_token_deezer', access_token, {
           req,
           res,
-          maxAge: 3600,
           httpOnly: true,
         });
 
         setCookie('refresh_token_deezer', refresh_token, {
           req,
           res,
-          maxAge: 24 * 60 * 60 * 1000,
           httpOnly: true,
         });
 

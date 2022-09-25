@@ -4,7 +4,8 @@ export default function handler(req, res) {
       error: 'Invalid request method',
     });
   }
-  const access_token = req.body.access_token;
+  const access_token =
+    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
   const user_id = req.body.user_id;
   const title = req.body.playlist_name;
   const is_public = req.body.is_public || true;

@@ -1,7 +1,8 @@
 //Request to add items to playlist
 //URI type -> https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids
 export default function handler(req, res) {
-  const access_token = req.body.access_token;
+  const access_token =
+    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
   const playlist_id = req.body.playlist_id;
   const songs = req.body.songs; //1522223672, 1174603092
 

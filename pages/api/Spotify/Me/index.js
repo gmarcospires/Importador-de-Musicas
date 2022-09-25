@@ -1,19 +1,20 @@
 export default function handler(req, res) {
-  if (req.method !== "POST") {
+  if (req.method !== 'POST') {
     res.status(400).json({
-      error: "Invalid request method",
+      error: 'Invalid request method',
     });
   }
-  const access_token = req.body.access_token;
+  const access_token =
+    getCookie('access_token', { req, res }) || req.body.access_token;
   const authOptions = {
     headers: {
-      Authorization: "Bearer " + access_token,
-      limit: "50",
+      Authorization: 'Bearer ' + access_token,
+      limit: '50',
     },
-    method: "GET",
+    method: 'GET',
   };
 
-  fetch("https://api.spotify.com/v1/me", authOptions)
+  fetch('https://api.spotify.com/v1/me', authOptions)
     .then((response) => {
       if (response.status === 200) {
         return response.json();

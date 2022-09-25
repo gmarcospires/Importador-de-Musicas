@@ -1,29 +1,30 @@
 export default function handler(req, res) {
-  if (req.method !== "POST") {
+  if (req.method !== 'POST') {
     res.status(400).json({
-      error: "Invalid request method",
+      error: 'Invalid request method',
     });
   }
-  const access_token = req.body.access_token;
+  const access_token =
+    getCookie('access_token', { req, res }) || req.body.access_token;
   const playlist_id = req.body.playlist_id;
   const offset = req.body.offset || 0;
   const limit = req.body.limit || 20;
 
   const options = {
     headers: {
-      Authorization: "Bearer " + access_token,
+      Authorization: 'Bearer ' + access_token,
     },
-    method: "GET",
+    method: 'GET',
   };
   const params = new URLSearchParams([
-    ["offset", offset],
-    ["limit", limit],
+    ['offset', offset],
+    ['limit', limit],
   ]);
 
   const url =
-    "https://api.spotify.com/v1/playlists/" +
+    'https://api.spotify.com/v1/playlists/' +
     playlist_id +
-    "?" +
+    '?' +
     params.toString();
   fetch(url, options)
     .then((response) => {

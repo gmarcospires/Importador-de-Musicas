@@ -1,13 +1,14 @@
 //Search
 //"track: easy on me artist:adele isrc:USSM12105970"
 export default function handler(req, res) {
-  if (req.method !== "POST") {
+  if (req.method !== 'POST') {
     res.status(400).json({
-      error: "Invalid request method",
+      error: 'Invalid request method',
     });
   }
 
-  const access_token = req.body.access_token;
+  const access_token =
+    getCookie('access_token', { req, res }) || req.body.access_token;
   const query = req.body.query;
   const type = req.body.type;
   const offset = req.body.offset || 0;
@@ -21,13 +22,13 @@ export default function handler(req, res) {
   });
   const authOptions = {
     headers: {
-      Authorization: "Bearer " + access_token,
-      "Content-Type": "application/json",
+      Authorization: 'Bearer ' + access_token,
+      'Content-Type': 'application/json',
     },
-    method: "GET",
+    method: 'GET',
   };
 
-  const url = "https://api.spotify.com/v1/search?" + params.toString();
+  const url = 'https://api.spotify.com/v1/search?' + params.toString();
   fetch(url, authOptions)
     .then((response) => {
       if (response.status === 201 || response.status === 200) {

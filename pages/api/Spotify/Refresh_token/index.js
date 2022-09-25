@@ -1,5 +1,5 @@
-import { client_id, client_secret } from '../../../js/spotify_auth.js';
-import { getCookie, setCookie } from 'cookies-next';
+import { client_id, client_secret } from '../../../../js/spotify_auth.js';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 
 export default function handler(req, res) {
   if (req.method !== 'GET') {
@@ -12,10 +12,11 @@ export default function handler(req, res) {
     client_id + ':' + client_secret,
     'utf8'
   ).toString('base64');
-  var refresh_token = getCookie('refresh_token', { req, res }) || req.query.refresh_token;
+  var refresh_token =
+    req.query.refresh_token || getCookie('refresh_token', { req, res });
 
   const params = new URLSearchParams([
-    ['refresh_token', refresh_token],
+    ['refresh_token', refresh_token + '65465465'],
     ['grant_type', 'refresh_token'],
   ]);
   var options = {
@@ -32,6 +33,10 @@ export default function handler(req, res) {
       if (response.status === 200) {
         return response.json();
       } else {
+        if (response.status === 400) {
+          deleteCookie('access_token', { req, res });
+          deleteCookie('refresh_token', { req, res });
+        }
         throw new Error(
           JSON.stringify({
             status: response.status,
@@ -42,12 +47,16 @@ export default function handler(req, res) {
     })
     .then((jsonResponse) => {
       let access_token = jsonResponse.access_token;
+      let refresh_token = jsonResponse.refresh_token;
+      const expires_in = jsonResponse.expires_in;
+
       setCookie('access_token', access_token, {
         req,
         res,
-        maxAge: 3600,
+        maxAge: expires_in,
         httpOnly: true,
       });
+      console.log('REFRESH TOKEN');
       res.status(200).json({
         access_token: access_token,
       });

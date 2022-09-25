@@ -6,7 +6,8 @@ export default function handler(req, res) {
     });
   }
 
-  const access_token = req.body.access_token;
+  const access_token =
+    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
   const track_id = req.body.track_id;
   const offset = req.body.offset || 0;
   const limit = req.body.limit || 20;

@@ -7,7 +7,8 @@ export default function handler(req, res) {
     });
   }
 
-  const access_token = req.body.access_token;
+  const access_token =
+    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
   const query = req.body.query; // track:'easy on me' artist:'adele'
   const type = req.body.type; //artist, album, track, playlist, radio, podcast, episode
   const offset = req.body.offset || 0;

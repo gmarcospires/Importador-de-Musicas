@@ -1,26 +1,27 @@
 //Request to add items to playlist
 //URI type -> https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids
 export default function handler(req, res) {
-  if (req.method !== "POST") {
+  if (req.method !== 'POST') {
     res.status(400).json({
-      error: "Invalid request method",
+      error: 'Invalid request method',
     });
   }
-  const access_token = req.body.access_token;
+  const access_token =
+    getCookie('access_token', { req, res }) || req.body.access_token;
   const playlist_id = req.body.playlist_id;
   const uris = req.body.uris;
 
   const authOptions = {
     headers: {
-      Authorization: "Bearer " + access_token,
-      "Content-Type": "application/json",
+      Authorization: 'Bearer ' + access_token,
+      'Content-Type': 'application/json',
     },
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify({
       uris: [uris],
     }),
   };
-  const url = "https://api.spotify.com/v1/playlists/" + playlist_id + "/tracks";
+  const url = 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks';
 
   fetch(url, authOptions)
     .then((response) => {

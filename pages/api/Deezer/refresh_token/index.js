@@ -2,7 +2,8 @@ import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 
 export default function handler(req, res) {
   //Request to get the user's profile information
-  const access_token = req.body.access_token;
+  const access_token =
+    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
   const authOptions = {
     method: 'GET',
   };
