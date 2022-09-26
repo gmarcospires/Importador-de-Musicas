@@ -6,17 +6,18 @@ export default function handler(req, res) {
       error: 'Invalid request method',
     });
   }
+  const body = JSON.parse(req.body);
   const access_token =
-    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
-  const playlist_id = req.body.playlist_id;
-  const offset = req.body.offset || 0;
-  const limit = req.body.limit || 20;
+    getCookie('access_token_deezer', { req, res }) || body.access_token;
+  const playlist_id = body.playlist_id;
+  const offset = body.offset || 0;
+  const limit = body.limit || 20;
 
   const options = {
     method: 'GET',
   };
   const params = new URLSearchParams([
-    ['offset', offset],
+    ['index', offset],
     ['limit', limit],
     ['access_token', access_token],
   ]);
@@ -24,6 +25,7 @@ export default function handler(req, res) {
   const url =
     `https://api.deezer.com/playlist/${playlist_id}/tracks?` +
     params.toString();
+    
   fetch(url, options)
     .then((response) => {
       if (response.status === 200) {
@@ -38,7 +40,7 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      res.status(200).json(jsonResponse);
+      return res.status(200).json(jsonResponse);
     })
     .catch((err) => {
       console.log(err);

@@ -58,14 +58,14 @@ export default function handler(req, res) {
         let refresh_token = jsonResponse.refresh_token;
         const expires_in = jsonResponse.expires_in;
 
-        setCookie('access_token', access_token, {
+        setCookie('access_token_spotify', access_token, {
           req,
           res,
           maxAge: expires_in,
           httpOnly: true,
         });
 
-        setCookie('refresh_token', refresh_token, {
+        setCookie('refresh_token_spotify', refresh_token, {
           req,
           res,
           httpOnly: true,

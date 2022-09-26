@@ -1,18 +1,21 @@
 //Search
 //"track: easy on me artist:adele isrc:USSM12105970"
+import { getCookie } from 'cookies-next';
+
 export default function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
       error: 'Invalid request method',
     });
   }
-
+ 
+  const body = JSON.parse(req.body);
   const access_token =
-    getCookie('access_token', { req, res }) || req.body.access_token;
-  const query = req.body.query;
-  const type = req.body.type;
-  const offset = req.body.offset || 0;
-  const limit = req.body.limit || 20;
+    getCookie('access_token_spotify', { req, res }) || body.access_token;
+  const query = body.query;
+  const type = body.type;
+  const offset = body.offset || 0;
+  const limit = body.limit || 20;
 
   const params = new URLSearchParams({
     q: query,

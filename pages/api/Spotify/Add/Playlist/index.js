@@ -10,7 +10,7 @@ export default function handler(req, res) {
 
   const body = JSON.parse(req.body);
   let access_token =
-    getCookie('access_token', { req, res }) || body.access_token;
+    getCookie('access_token_spotify', { req, res }) || body.access_token;
   const user_id = body.user_id;
   const name = body.playlist_name;
   const is_public = body.is_public === undefined ? true : body.is_public;

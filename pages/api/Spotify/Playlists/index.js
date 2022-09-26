@@ -7,7 +7,7 @@ export default function handler(req, res) {
     });
   }
   let access_token =
-    getCookie('access_token', { req, res }) || req.body.access_token;
+    getCookie('access_token_spotify', { req, res }) || req.body.access_token;
   const offset = req.body.offset || 0;
   const limit = req.body.limit || 20;
 

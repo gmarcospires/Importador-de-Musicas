@@ -88,6 +88,7 @@ export default function Home() {
       })
       .catch((error) => {
         console.log(error);
+        return [];
       });
   }
 
@@ -199,8 +200,8 @@ export default function Home() {
       body: JSON.stringify({
         origem: valueOrigin,
         destino: valueDestiny,
-        playlist_origem: plyalistOriginId,
-        playlist_destino: plyalistDestinyId,
+        id_playlist_origem: plyalistOriginId,
+        id_playlist_destino: plyalistDestinyId,
       }),
     };
     await fetch('api/transferencia', options)
@@ -214,7 +215,9 @@ export default function Home() {
           new Error(response.json());
         }
       })
-      .then((data) => {})
+      .then((data) => {
+        console.log(data);
+      })
       .finally(() => {
         setButtonLoading(false);
       })

@@ -12,7 +12,7 @@ export default function Home(props) {
   // console.log(cookies.current.spotify_auth_state);
   useEffect(() => {
     if (cookies.current != undefined) {
-      if (cookies.current.access_token) {
+      if (cookies.current.access_token_spotify) {
         setAlterou(true);
       }
       if (cookies.current.access_token_deezer) {
@@ -30,7 +30,7 @@ export default function Home(props) {
       <h1 className={styles.title}>Transfira Playlists!</h1>
       <p className={styles.description}>Transfira Playlits facilmente!</p>
       <div className={styles.grid}>
-        {!cookies.current || !cookies.current.access_token ? (
+        {!cookies.current || !cookies.current.access_token_spotify ? (
           <Button href='/api/spotify/login' className={styles.card}>
             Logar com Spotify
           </Button>
@@ -41,7 +41,7 @@ export default function Home(props) {
           </Button>
         ) : null}
         {cookies.current &&
-        cookies.current.access_token &&
+        cookies.current.access_token_spotify &&
         cookies.current.access_token_deezer ? (
           <Button href='/transferir' className={styles.card}>
             Começar a Transferir!

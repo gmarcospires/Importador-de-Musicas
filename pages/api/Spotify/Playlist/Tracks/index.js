@@ -1,17 +1,17 @@
 import { getCookie } from 'cookies-next';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
       error: 'Invalid request method',
     });
   }
-  console.log('passei');
+  const body = JSON.parse(req.body);
   const access_token =
-    getCookie('access_token', { req, res }) || req.body.access_token;
-  const playlist_id = req.body.playlist_id;
-  const offset = req.body.offset || 0;
-  const limit = req.body.limit || 20;
+    getCookie('access_token_spotify', { req, res }) || body.access_token;
+  const playlist_id = body.playlist_id;
+  const offset = body.offset || 0;
+  const limit = body.limit || 20;
 
   const options = {
     headers: {
@@ -19,6 +19,7 @@ export default function handler(req, res) {
     },
     method: 'GET',
   };
+
   const params = new URLSearchParams([
     ['offset', offset],
     ['limit', limit],
@@ -29,7 +30,8 @@ export default function handler(req, res) {
     playlist_id +
     '/tracks?' +
     params.toString();
-  fetch(url, options)
+
+  await fetch(url, options)
     .then((response) => {
       if (response.status === 200) {
         return response.json();
@@ -43,7 +45,7 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      res.status(200).json(jsonResponse);
+      return res.status(200).json(jsonResponse);
     })
     .catch((err) => {
       console.log(err);
