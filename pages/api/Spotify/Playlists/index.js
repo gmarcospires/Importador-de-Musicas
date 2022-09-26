@@ -11,6 +11,7 @@ export default function handler(req, res) {
   const offset = req.body.offset || 0;
   const limit = req.body.limit || 20;
 
+  console.log('access_token', access_token);
   if (!access_token) {
     fetch('api/spotify/refresh_token', { method: 'get' })
       .then((response) => {

@@ -1,3 +1,5 @@
+import { getCookie } from 'cookies-next';
+
 export default function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
@@ -28,6 +30,7 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
+      console.log(jsonResponse);
       res.status(200).json(jsonResponse);
     })
     .catch((err) => {

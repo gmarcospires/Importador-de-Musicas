@@ -34,8 +34,10 @@ export default function Home() {
   const [plyalistOriginId, setPlyalistOriginId] = useState('');
   const [plyalistDestinyId, setPlyalistDestinyId] = useState('');
 
-  const [opened, setOpened] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
+
+  const [opened, setOpened] = useState(false);
+  const [buttonLoadingForm, setButtonLoadingForm] = useState(false);
 
   const SelectItem = forwardRef(
     ({ image, label, description, ...others }, ref) => (
@@ -90,13 +92,13 @@ export default function Home() {
   }
 
   //Criar Nova Playlist
-  function newPlyalist(formData) {
-    console.log(formData);
-    const options = {
+  async function newPlyalist(formData) {
+    let user_id = '';
+
+    await fetch(`api/${valueDestiny}/me`, {
       method: 'POST',
-      body: formData,
-    };
-    fetch(`api/${valueDestiny}/me`, {})
+      body: JSON.stringify({}),
+    })
       .then((response) => {
         if (response.status == 200) {
           return response.json();
@@ -108,17 +110,41 @@ export default function Home() {
         }
       })
       .then((data) => {
-        return data['data'] || data['items'];
+        user_id = data['id'];
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({
+        user_id: user_id,
+        playlist_name: formData.playlist_name,
+        description: formData.description,
+        is_public: formData.is_public,
+      }),
+    };
+    await fetch(`api/${valueDestiny}/add/playlist`, options)
+      .then((response) => {
+        if (response.status == 200) {
+          return response.json();
+        } else if (response.status == 401) {
+          alert('Você precisa Logar novamente!');
+          window.location.href = '/inicio';
+        } else {
+          new Error(response.json());
+        }
       })
       .then((data) => {
-        let playlists = [];
-        data.forEach((dado) => {
-          playlists = [
-            ...playlists,
-            { value: dado.id, label: dado.name || dado.title },
-          ];
-        });
-        return playlists;
+        setPlaylistsDestiny([
+          ...playlistsDestiny,
+          { value: data['id'], label: formData.playlist_name },
+        ]);
+        setOpened(false);
+      })
+      .finally(() => {
+        setButtonLoadingForm(false);
       })
       .catch((error) => {
         console.log(error);
@@ -155,17 +181,47 @@ export default function Home() {
 
   const form = useForm({
     initialValues: {
-      name: '',
+      playlist_name: '',
       description: '',
       is_public: true,
     },
 
     // functions will be used to validate values at corresponding key
     validate: (value) => ({
-      name: !value.name.trim() && 'Nome da Playlist é obrigatório',
+      playlist_name:
+        !value.playlist_name.trim() && 'Nome da Playlist é obrigatório',
     }),
   });
 
+  async function transferir() {
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({
+        origem: valueOrigin,
+        destino: valueDestiny,
+        playlist_origem: plyalistOriginId,
+        playlist_destino: plyalistDestinyId,
+      }),
+    };
+    await fetch('api/transferencia', options)
+      .then((response) => {
+        if (response.status == 200) {
+          return response.json();
+        } else if (response.status == 401) {
+          alert('Você precisa Logar novamente!');
+          window.location.href = '/inicio';
+        } else {
+          new Error(response.json());
+        }
+      })
+      .then((data) => {})
+      .finally(() => {
+        setButtonLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
   return (
     <main className={styles.main}>
       <h1>Transferência</h1>
@@ -276,7 +332,14 @@ export default function Home() {
             ) : null}
           </Grid.Col>
         </Grid>
-        <Button disabled={!(plyalistOriginId && plyalistDestinyId)}>
+        <Button
+          disabled={!(plyalistOriginId && plyalistDestinyId)}
+          loading={buttonLoading}
+          onClick={() => {
+            setButtonLoading(true);
+            transferir();
+          }}
+        >
           Transferir
         </Button>
       </Box>
@@ -292,35 +355,41 @@ export default function Home() {
         transition='fade'
         transitionDuration={600}
         transitionTimingFunction='ease'
-        onClose={() => setOpened(false)}
+        onClose={() => {
+          setOpened(false);
+          form.reset();
+        }}
         title='Criar Playlist'
         centered
       >
-        <form onSubmit={form.onSubmit((values) => newPlyalist(values))}>
+        <form
+          onSubmit={form.onSubmit((values) => {
+            setButtonLoadingForm(true);
+            newPlyalist(values);
+            form.reset();
+          })}
+        >
           <TextInput
             placeholder='Nome da Playlist'
             label='Nome'
-            name='name'
-            {...form.getInputProps('name')}
+            name='playlist_name'
+            style={{ padding: '10px' }}
+            {...form.getInputProps('playlist_name')}
           />
           <TextInput
             placeholder='Descrição da Playlist'
             label='Descrição'
             name='description'
+            style={{ padding: '10px' }}
             {...form.getInputProps('description')}
           />
           <Checkbox
-            label='Publica'
+            label='Pública'
             {...form.getInputProps('is_public', { type: 'checkbox' })}
             name='is_public'
+            style={{ padding: '10px' }}
           />
-          <Button
-            type='submit'
-            onClick={(e) => {
-              setButtonLoading(true);
-            }}
-            loading={buttonLoading}
-          >
+          <Button type='submit' loading={buttonLoadingForm}>
             Criar
           </Button>
         </form>

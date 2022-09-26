@@ -1,16 +1,21 @@
+import { getCookie } from 'cookies-next';
+// TODO - Public e Collaborative
 export default function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
       error: 'Invalid request method',
     });
   }
+  const body = JSON.parse(req.body);
   const access_token =
-    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
-  const user_id = req.body.user_id;
-  const title = req.body.playlist_name;
-  const is_public = req.body.is_public || true;
-  const collaborative = req.body.is_collaborative || false;
-  const description = req.body.playlist_description || '';
+    getCookie('access_token_deezer', { req, res }) || body.access_token;
+
+  const user_id = body.user_id;
+  const title = body.playlist_name;
+  const is_public = body.is_public === undefined ? true : body.is_public;
+  const collaborative =
+    body.is_collaborative === undefined ? false : body.is_collaborative;
+  const description = body.description || '';
 
   const options = {
     method: 'POST',
@@ -39,7 +44,7 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      res.status(200).json(jsonResponse);
+      return res.status(200).json(jsonResponse);
     })
     .catch((err) => {
       console.log(err);

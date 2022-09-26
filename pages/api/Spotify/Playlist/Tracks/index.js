@@ -1,9 +1,12 @@
+import { getCookie } from 'cookies-next';
+
 export default function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
       error: 'Invalid request method',
     });
   }
+  console.log('passei');
   const access_token =
     getCookie('access_token', { req, res }) || req.body.access_token;
   const playlist_id = req.body.playlist_id;

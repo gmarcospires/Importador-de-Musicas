@@ -1,16 +1,22 @@
+import { getCookie } from 'cookies-next';
+
+//TODO - public and colaborative options
 export default function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
       error: 'Invalid request method',
     });
   }
-  const access_token =
-    getCookie('access_token', { req, res }) || req.body.access_token;
-  const user_id = req.body.user_id;
-  const name = req.body.playlist_name;
-  const is_public = req.body.is_public || true;
-  const collaborative = req.body.is_collaborative || false;
-  const description = req.body.playlist_description || '';
+
+  const body = JSON.parse(req.body);
+  let access_token =
+    getCookie('access_token', { req, res }) || body.access_token;
+  const user_id = body.user_id;
+  const name = body.playlist_name;
+  const is_public = body.is_public === undefined ? true : body.is_public;
+  const collaborative =
+    body.is_collaborative === undefined ? false : body.is_collaborative;
+  const description = body.description || '';
 
   if (!access_token) {
     fetch('api/spotify/refresh_token', { method: 'get' })
@@ -52,6 +58,7 @@ export default function handler(req, res) {
   };
 
   const url = 'https://api.spotify.com/v1/users/' + user_id + '/playlists';
+  console.log(options);
   fetch(url, options)
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
