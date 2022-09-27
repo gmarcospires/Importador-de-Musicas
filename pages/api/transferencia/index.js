@@ -67,7 +67,6 @@ export default async function handler(req, res) {
     qtd_paginas++;
   } while (ultima_pagina['next']);
 
-
   //DEEZER
   // Album => album->title
   // artist => artist->name
@@ -79,11 +78,10 @@ export default async function handler(req, res) {
   // nome musica => track->name  ou title_short
   // isrc => track->external_ids->isrc
 
-
   //Passos Destino
   //1 - Procurar as musicas da playlist de origem
   //TODO: - Verificar se a musica ja existe na playlist de destino
-  //TODO: - Verificar localidade 
+  //TODO: - Verificar localidade
   // tracks_origem.forEach(track => {
   //   let musicName = tracks_origem[i].title || tracks_origem[i].track?.name;
   //   let artistName = tracks_origem[i].artist?.name || tracks_origem[i].track?.artists[0]?.name;
@@ -91,14 +89,16 @@ export default async function handler(req, res) {
 
   // });
 
-  for(let i=0; i<10; i++){
+  for (let i = 0; i < 10; i++) {
     let musicName = tracks_origem[i].title || tracks_origem[i].track?.name;
-    let artistName = tracks_origem[i].artist?.name || tracks_origem[i].track?.artists[0]?.name;
-    let albumName = tracks_origem[i].album?.title || tracks_origem[i].track?.album?.name;
+    let artistName =
+      tracks_origem[i].artist?.name || tracks_origem[i].track?.artists[0]?.name;
+    let albumName =
+      tracks_origem[i].album?.title || tracks_origem[i].track?.album?.name;
     let type = tracks_origem[i].type || tracks_origem[i].track?.type;
 
-    console.log('Origem',musicName, artistName, albumName, type);
-    // DEEZER 
+    console.log('Origem', musicName, artistName, albumName, type);
+    // DEEZER
     // query "album" "artist" "track"
     // type
     // limit
@@ -106,12 +106,19 @@ export default async function handler(req, res) {
 
     //SPOTIFY
     // query
-    // type "album" "artist" "track" 
+    // type "album" "artist" "track"
     // limit
     // offset
     let url = process.env.HOST + 'api/' + destino + '/search';
-    let query = "track:'" + musicName + "' artist:'" + artistName + "' album:'" + albumName + "'";
-    let optionsSearch = { 
+    let query =
+      "track:'" +
+      musicName +
+      "' artist:'" +
+      artistName +
+      "' album:'" +
+      albumName +
+      "'";
+    let optionsSearch = {
       method: 'POST',
       body: JSON.stringify({
         query: query,
@@ -135,17 +142,18 @@ export default async function handler(req, res) {
         }
       })
       .then((jsonResponse) => {
-       console.log(jsonResponse);
+        console.log(jsonResponse);
+        // let resposta = jsonResponse['data'] || jsonResponse['items'];
+        return 1;
       })
       .catch((err) => {
         console.log(err);
         res.status(500).json({
           error: err.message,
         });
-      }); 
+      });
   }
   res.status(200).json(tracks_origem);
-  
-  
+
   //2 - Adicionar as musicas na playlist de destino
 }

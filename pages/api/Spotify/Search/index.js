@@ -8,7 +8,7 @@ export default function handler(req, res) {
       error: 'Invalid request method',
     });
   }
- 
+
   const body = JSON.parse(req.body);
   const access_token =
     getCookie('access_token_spotify', { req, res }) || body.access_token;
@@ -35,7 +35,7 @@ export default function handler(req, res) {
   fetch(url, authOptions)
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
-        res.status(200).json(jsonResponse);
+        return response.json();
       } else {
         throw new Error(
           JSON.stringify({

@@ -21,7 +21,7 @@ export default function handler(req, res) {
     q: query,
     type: type,
     limit: limit,
-    offset: offset,
+    index: offset,
   });
   var authOptions = {
     method: 'GET',
