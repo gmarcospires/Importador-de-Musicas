@@ -6,7 +6,7 @@ import {
 } from '../../../../js/spotify_auth.js';
 import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.status(400).json({
       error: 'Invalid request method',
@@ -40,7 +40,7 @@ export default function handler(req, res) {
       method: 'POST',
     };
 
-    fetch('https://accounts.spotify.com/api/token', authOptions)
+    await fetch('https://accounts.spotify.com/api/token', authOptions)
       .then((response) => {
         if (response.status === 200) {
           return response.json();
@@ -70,7 +70,6 @@ export default function handler(req, res) {
           res,
           httpOnly: true,
         });
-        res.status(200).redirect('/inicio');
       })
       .catch((err) => {
         console.log(err);
@@ -79,4 +78,5 @@ export default function handler(req, res) {
         });
       });
   }
+  res.status(200).redirect('/inicio');
 }

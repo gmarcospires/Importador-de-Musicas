@@ -1,7 +1,7 @@
 import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 import { app_id, secret, stateKey } from '../../../../js/deezer_auth.js';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.status(400).json({
       error: 'Invalid request method',
@@ -28,7 +28,7 @@ export default function handler(req, res) {
     };
     const url =
       'https://connect.deezer.com/oauth/access_token.php?' + params.toString();
-    fetch(url, authOptions)
+    await fetch(url, authOptions)
       .then((response) => {
         if (response.status === 200) {
           return response.json();
@@ -57,8 +57,6 @@ export default function handler(req, res) {
           res,
           httpOnly: true,
         });
-
-        res.status(200).redirect('/inicio');
       })
       .catch((err) => {
         console.log(err);
@@ -66,5 +64,6 @@ export default function handler(req, res) {
           error: err.message,
         });
       });
+    res.status(200).redirect('/inicio');
   }
 }
