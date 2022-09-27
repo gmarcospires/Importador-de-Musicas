@@ -1,6 +1,6 @@
 //Request to add items to playlist
 //URI type -> https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
       error: 'Invalid request method',
@@ -23,7 +23,7 @@ export default function handler(req, res) {
   };
   const url = 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks';
 
-  fetch(url, authOptions)
+  let resposta = await fetch(url, authOptions)
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
         return response.json();
@@ -37,7 +37,7 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      res.status(200).json(jsonResponse);
+      return jsonResponse;
     })
     .catch((err) => {
       console.log(err);
@@ -45,4 +45,5 @@ export default function handler(req, res) {
         error: err.message,
       });
     });
+  res.status(200).json(resposta);
 }

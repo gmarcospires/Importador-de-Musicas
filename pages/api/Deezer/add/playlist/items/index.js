@@ -1,6 +1,6 @@
 //Request to add items to playlist
 //URI type -> https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const access_token =
     getCookie('access_token_deezer', { req, res }) || req.body.access_token;
   const playlist_id = req.body.playlist_id;
@@ -17,7 +17,7 @@ export default function handler(req, res) {
   const url =
     `https://api.deezer.com/playlist/${playlist_id}/tracks?` +
     params.toString();
-  fetch(url, options)
+  let resposta = await fetch(url, options)
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
         return response.json();
@@ -31,7 +31,7 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      res.status(200).json(jsonResponse);
+      return jsonResponse;
     })
     .catch((err) => {
       console.log(err);
@@ -39,4 +39,5 @@ export default function handler(req, res) {
         error: err.message,
       });
     });
+  res.status(200).json(resposta);
 }
