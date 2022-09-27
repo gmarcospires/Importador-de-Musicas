@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   };
   const url = 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks';
 
-  let resposta = await fetch(url, authOptions)
+  const resposta = await fetch(url, authOptions)
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
         return response.json();

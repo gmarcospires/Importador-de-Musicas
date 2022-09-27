@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   const url =
     `https://api.deezer.com/playlist/${playlist_id}/tracks?` +
     params.toString();
-  let resposta = await fetch(url, options)
+  const resposta = await fetch(url, options)
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
         return response.json();
