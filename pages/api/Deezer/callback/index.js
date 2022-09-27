@@ -58,7 +58,7 @@ export default function handler(req, res) {
           httpOnly: true,
         });
 
-        res.redirect('/inicio');
+        res.status(200).redirect('/inicio');
       })
       .catch((err) => {
         console.log(err);
