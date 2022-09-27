@@ -88,7 +88,8 @@ export default async function handler(req, res) {
   //   let albumName = tracks_origem[i].album?.title || tracks_origem[i].track?.album?.name;
 
   // });
-
+  let respostaSearch = [];
+  let noResponse = []; //musicas que nao foram encontradas
   for (let i = 0; i < 10; i++) {
     let musicName = tracks_origem[i].title || tracks_origem[i].track?.name;
     let artistName =
@@ -97,7 +98,7 @@ export default async function handler(req, res) {
       tracks_origem[i].album?.title || tracks_origem[i].track?.album?.name;
     let type = tracks_origem[i].type || tracks_origem[i].track?.type;
 
-    console.log('Origem', musicName, artistName, albumName, type);
+    // console.log('Origem', musicName, artistName, albumName, type);
     // DEEZER
     // query "album" "artist" "track"
     // type
@@ -105,18 +106,24 @@ export default async function handler(req, res) {
     // offset
 
     //SPOTIFY
-    // query
+    // query 
     // type "album" "artist" "track"
     // limit
     // offset
+
+    //Ajustar para não ter ' " em qualquer lugar da query
+    //Ajustar para pegar o album 
+    //"track:'I'm with You' artist:'Vance Joy'"
+   //"track:'Something Got Between Us - Harvey Sutherland Remix' artist:'The Jungle Giants' album:'Something Got Between Us Harvey Sutherland Remix'"
+    console.log('(((e))iii(r)'.replace('(', '').replace(')', ''));
     let url = process.env.HOST + 'api/' + destino + '/search';
     let query =
       "track:'" +
       musicName +
       "' artist:'" +
       artistName +
-      "' album:'" +
-      albumName +
+      // "' album:'" +
+      // albumName+
       "'";
     let optionsSearch = {
       method: 'POST',
@@ -142,8 +149,17 @@ export default async function handler(req, res) {
         }
       })
       .then((jsonResponse) => {
-        console.log(jsonResponse);
-        // let resposta = jsonResponse['data'] || jsonResponse['items'];
+        //  console.log(jsonResponse);
+        let resposta = jsonResponse['data'] || jsonResponse['tracks']['items'];
+        // console.log(resposta)
+        if(resposta.length){
+          respostaSearch = [...respostaSearch, ...resposta];
+        }else{
+          noResponse = [...noResponse, {
+            query: query, //
+            response: jsonResponse,
+          }];
+        }
         return 1;
       })
       .catch((err) => {
@@ -153,7 +169,11 @@ export default async function handler(req, res) {
         });
       });
   }
-  res.status(200).json(tracks_origem);
+  // TODO - Types que não existem no destino e vice versa
+  res.status(200).json({
+    resposta: respostaSearch,
+    noResponse: noResponse,
+    });
 
   //2 - Adicionar as musicas na playlist de destino
 }
