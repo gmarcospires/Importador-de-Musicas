@@ -1,4 +1,4 @@
-import { app_id, redirect_uri, stateKey } from '../../../../js/deezer_auth.js';
+import { stateKey } from '../../../../js/deezer_auth.js';
 import { deleteCookie } from 'cookies-next';
 
 export default function handler(req, res) {

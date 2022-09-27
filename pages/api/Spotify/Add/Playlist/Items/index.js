@@ -1,5 +1,7 @@
 //Request to add items to playlist
 //URI type -> https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids
+import { getCookie } from 'cookies-next';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({

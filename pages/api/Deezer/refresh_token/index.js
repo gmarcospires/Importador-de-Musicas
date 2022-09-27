@@ -1,4 +1,4 @@
-import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+// import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 
 export default function handler(req, res) {
   // //Request to get the user's profile information
