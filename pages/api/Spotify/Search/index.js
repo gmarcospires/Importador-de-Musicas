@@ -2,7 +2,7 @@
 //"track: easy on me artist:adele isrc:USSM12105970"
 import { getCookie } from 'cookies-next';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
       error: 'Invalid request method',
@@ -32,7 +32,7 @@ export default function handler(req, res) {
   };
 
   const url = 'https://api.spotify.com/v1/search?' + params.toString();
-  fetch(url, authOptions)
+  const resposta = await fetch(url, authOptions)
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
         return response.json();
@@ -46,7 +46,7 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      res.send(jsonResponse);
+      return jsonResponse;
     })
     .catch((err) => {
       console.log(err);
@@ -54,4 +54,6 @@ export default function handler(req, res) {
         error: err.message,
       });
     });
+
+  res.status(200).send(resposta);
 }
