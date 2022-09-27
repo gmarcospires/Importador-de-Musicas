@@ -6,10 +6,11 @@ export default async function handler(req, res) {
       error: 'Invalid request method',
     });
   }
+  const body = JSON.parse(req.body);
   let access_token =
-    getCookie('access_token_spotify', { req, res }) || req.body.access_token;
-  const offset = req.body.offset || 0;
-  const limit = req.body.limit || 20;
+    getCookie('access_token_spotify', { req, res }) || body.access_token;
+  const offset = body.offset || 0;
+  const limit = body.limit || 20;
 
   // if (!access_token) {
   //   fetch('api/spotify/refresh_token', { method: 'get' })

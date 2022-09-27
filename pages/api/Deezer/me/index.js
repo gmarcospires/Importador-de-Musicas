@@ -6,8 +6,9 @@ export default async function handler(req, res) {
       error: 'Invalid request method',
     });
   }
+  const body = JSON.parse(req.body);
   const access_token =
-    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
+    getCookie('access_token_deezer', { req, res }) || body.access_token;
   const authOptions = {
     method: 'GET',
   };

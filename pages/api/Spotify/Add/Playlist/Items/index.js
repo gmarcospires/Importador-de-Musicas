@@ -8,10 +8,11 @@ export default async function handler(req, res) {
       error: 'Invalid request method',
     });
   }
+  const body = JSON.parse(req.body);
   const access_token =
-    getCookie('access_token_spotify', { req, res }) || req.body.access_token;
-  const playlist_id = req.body.playlist_id;
-  const uris = req.body.uris;
+    getCookie('access_token_spotify', { req, res }) || body.access_token;
+  const playlist_id = body.playlist_id;
+  const uris = body.uris;
 
   const authOptions = {
     headers: {

@@ -3,10 +3,11 @@
 import { getCookie } from 'cookies-next';
 
 export default async function handler(req, res) {
+  const body = JSON.parse(req.body);
   const access_token =
-    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
-  const playlist_id = req.body.playlist_id;
-  const songs = req.body.songs; //1522223672, 1174603092
+    getCookie('access_token_deezer', { req, res }) || body.access_token;
+  const playlist_id = body.playlist_id;
+  const songs = body.songs; //1522223672, 1174603092
 
   const options = {
     method: 'POST',

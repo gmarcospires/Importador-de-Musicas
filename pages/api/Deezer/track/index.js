@@ -8,11 +8,12 @@ export default async function handler(req, res) {
     });
   }
 
+  const body = JSON.parse(req.body);
   const access_token =
-    getCookie('access_token_deezer', { req, res }) || req.body.access_token;
-  const track_id = req.body.track_id;
-  const offset = req.body.offset || 0;
-  const limit = req.body.limit || 20;
+    getCookie('access_token_deezer', { req, res }) || body.access_token;
+  const track_id = body.track_id;
+  const offset = body.offset || 0;
+  const limit = body.limit || 20;
 
   const options = {
     method: 'GET',
