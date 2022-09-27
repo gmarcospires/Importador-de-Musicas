@@ -1,7 +1,7 @@
 import { client_id, client_secret } from '../../../../js/spotify_auth.js';
 import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.status(400).json({
       error: 'Invalid request method',
@@ -28,7 +28,10 @@ export default function handler(req, res) {
     method: 'POST',
   };
 
-  fetch('https://accounts.spotify.com/api/token', options)
+  const resposta = await fetch(
+    'https://accounts.spotify.com/api/token',
+    options
+  )
     .then((response) => {
       if (response.status === 200) {
         return response.json();
@@ -49,16 +52,13 @@ export default function handler(req, res) {
       let access_token = jsonResponse.access_token;
       let refresh_token = jsonResponse.refresh_token;
       const expires_in = jsonResponse.expires_in;
+      console.log('REFRESH TOKEN');
 
       setCookie('access_token', access_token, {
         req,
         res,
         maxAge: expires_in,
         httpOnly: true,
-      });
-      console.log('REFRESH TOKEN');
-      res.status(200).json({
-        access_token: access_token,
       });
     })
     .catch((err) => {
@@ -67,4 +67,6 @@ export default function handler(req, res) {
         error: err.message,
       });
     });
+
+  res.status(200).json(resposta);
 }
