@@ -1,6 +1,6 @@
 import { getCookie } from 'cookies-next';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
       error: 'Invalid request method',
@@ -25,8 +25,8 @@ export default function handler(req, res) {
   const url =
     `https://api.deezer.com/playlist/${playlist_id}/tracks?` +
     params.toString();
-    
-  fetch(url, options)
+
+  const resposta = await fetch(url, options)
     .then((response) => {
       if (response.status === 200) {
         return response.json();
@@ -40,7 +40,7 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      return res.status(200).json(jsonResponse);
+      return jsonResponse;
     })
     .catch((err) => {
       console.log(err);
@@ -48,4 +48,5 @@ export default function handler(req, res) {
         error: err.message,
       });
     });
+  res.status(200).json(resposta);
 }

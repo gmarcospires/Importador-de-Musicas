@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     '/tracks?' +
     params.toString();
 
-  await fetch(url, options)
+  const resposta = await fetch(url, options)
     .then((response) => {
       if (response.status === 200) {
         return response.json();
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      return res.status(200).json(jsonResponse);
+      return jsonResponse;
     })
     .catch((err) => {
       console.log(err);
@@ -53,4 +53,5 @@ export default async function handler(req, res) {
         error: err.message,
       });
     });
+  return res.status(200).json(resposta);
 }
