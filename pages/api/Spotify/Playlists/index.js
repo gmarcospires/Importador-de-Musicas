@@ -1,6 +1,6 @@
 import { getCookie, deleteCookie, setCookie } from 'cookies-next';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({
       error: 'Invalid request method',
@@ -11,31 +11,30 @@ export default function handler(req, res) {
   const offset = req.body.offset || 0;
   const limit = req.body.limit || 20;
 
-  console.log('access_token', access_token);
-  if (!access_token) {
-    fetch('api/spotify/refresh_token', { method: 'get' })
-      .then((response) => {
-        if (response.status === 200) {
-          return response.json();
-        } else {
-          throw new Error(
-            JSON.stringify({
-              status: response.status,
-              statusText: response.statusText,
-            })
-          );
-        }
-      })
-      .then((jsonResponse) => {
-        access_token = jsonResponse.access_token;
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(401).json({
-          error: err.message,
-        });
-      });
-  }
+  // if (!access_token) {
+  //   fetch('api/spotify/refresh_token', { method: 'get' })
+  //     .then((response) => {
+  //       if (response.status === 200) {
+  //         return response.json();
+  //       } else {
+  //         throw new Error(
+  //           JSON.stringify({
+  //             status: response.status,
+  //             statusText: response.statusText,
+  //           })
+  //         );
+  //       }
+  //     })
+  //     .then((jsonResponse) => {
+  //       access_token = jsonResponse.access_token;
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       return res.status(401).json({
+  //         error: err.message,
+  //       });
+  //     });
+  // }
 
   const options = {
     headers: {
@@ -49,7 +48,7 @@ export default function handler(req, res) {
   ]);
 
   const url = 'https://api.spotify.com/v1/me/playlists?' + params.toString();
-  fetch(url, options)
+  const resposta = await fetch(url, options)
     .then((response) => {
       if (response.status === 200) {
         return response.json();
@@ -63,7 +62,7 @@ export default function handler(req, res) {
       }
     })
     .then((jsonResponse) => {
-      res.status(200).json(jsonResponse);
+      return jsonResponse;
     })
     .catch((err) => {
       console.log(err);
@@ -71,4 +70,6 @@ export default function handler(req, res) {
         error: err.message,
       });
     });
+
+  res.status(200).json(resposta);
 }
