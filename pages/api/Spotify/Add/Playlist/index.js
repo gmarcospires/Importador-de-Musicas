@@ -1,6 +1,5 @@
 import { getCookie } from 'cookies-next';
 
-//TODO - public and colaborative options
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(400).json({

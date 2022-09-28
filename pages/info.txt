@@ -1,0 +1,18 @@
+deezer/playlists = spotify/playlists
+
+// TODO:
+pages/api/transferencia =>
+    - Verificar se a musica ja existe na playlist de destino
+    - Types que não existem no destino/origem e vice versa 
+    - Verificar localidade do usuário
+    - Ajustar para não ter ' " em qualquer lugar da query (ok) 
+        1. "track:'I'm with You' artist:'Vance Joy'"
+    - Ajustar para pegar o album
+        1. "track:'Something Got Between Us - Harvey Sutherland Remix' artist:'The Jungle Giants' album:'Something Got Between Us Harvey Sutherland Remix'"
+
+pages/_app.js => 
+    - PROVIDER para openLoginModal
+    - PROVIDER para children Modal ????
+
+pages/api/*/add/playlist
+    - Setar nova playlist como (N)Public e Collaborative

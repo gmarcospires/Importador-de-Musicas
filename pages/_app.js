@@ -9,7 +9,6 @@ import { getCookies } from 'cookies-next';
 
 function MyApp({ Component, pageProps, cookies }) {
   const [openedLoginModal, setOpenedLoginModal] = useState(false);
-  // TODO - PROVIDER para openLoginModal
   const theme = useMantineTheme();
   return (
     <>
@@ -53,6 +52,6 @@ export default MyApp;
 
 export const getServerSideProps = ({ req, res }) => {
   return {
-      cookies: getCookies({ req, res }),
-    };
+    cookies: getCookies({ req, res }),
+  };
 };

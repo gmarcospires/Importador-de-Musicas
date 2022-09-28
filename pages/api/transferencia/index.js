@@ -21,10 +21,10 @@ export default async function handler(req, res) {
   //Passos Origem
   //1 - Pegar as musicas da playlist origem
   let tracks_origem = [];
-  const link = process.env.HOST + 'api/' + origem + '/playlist/tracks';
   let qtd_paginas = 0;
   let offset = 0;
   let ultima_pagina = {};
+  const link = process.env.HOST + 'api/' + origem + '/playlist/tracks';
 
   do {
     offset = qtd_paginas * 20;
@@ -80,8 +80,6 @@ export default async function handler(req, res) {
 
   //Passos Destino
   //1 - Procurar as musicas da playlist de origem
-  //TODO: - Verificar se a musica ja existe na playlist de destino
-  //TODO: - Verificar localidade
   console.log('PASSO ORIGEM COMPLETO', tracks_origem.length);
   let respostaSearch = [];
   let noResponse = []; //musicas que nao foram encontradas
@@ -97,11 +95,6 @@ export default async function handler(req, res) {
   //   // type "album" "artist" "track"
   //   // limit
   //   // offset
-
-  //   //Ajustar para não ter ' " em qualquer lugar da query ok
-  //   //Ajustar para pegar o album ?
-  //   //"track:'I'm with You' artist:'Vance Joy'" ok
-  //   //"track:'Something Got Between Us - Harvey Sutherland Remix' artist:'The Jungle Giants' album:'Something Got Between Us Harvey Sutherland Remix'"
 
   for (const track of tracks_origem) {
     let musicName = track.title || track.track?.name;
@@ -150,7 +143,7 @@ export default async function handler(req, res) {
           noResponse = [
             ...noResponse,
             {
-              query: query, //
+              query: query,
               response: jsonResponse,
             },
           ];
@@ -168,7 +161,6 @@ export default async function handler(req, res) {
         ];
       });
   }
-  // TODO - Types que não existem no destino e vice versa
   res.status(200).json({
     resposta: respostaSearch,
     noResponse: noResponse,
