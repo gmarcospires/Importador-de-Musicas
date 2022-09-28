@@ -19,7 +19,13 @@ import { IconPlus } from '@tabler/icons';
 import { servicos } from '../../js/servicos';
 import { useState, useEffect, useRef, forwardRef } from 'react';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { toggleModal } from '../../redux/features/modal/modalSlice';
+
 export default function Home() {
+  const modalLogin = useSelector((state) => state.modal.value);
+  const dispatch = useDispatch();
+
   const theme = useMantineTheme();
   const [valueDestiny, setValueDestiny] = useState('');
   const [valueOrigin, setValueOrigin] = useState('');
@@ -65,10 +71,9 @@ export default function Home() {
     return await fetch(`api/${origem}/playlists`, options)
       .then((response) => {
         if (response.status == 200) {
+          dispatch(toggleModal(modalLogin));
           return response.json();
-        } else if (response.status == 401) {
-          alert('Você precisa Logar novamente!');
-          window.location.href = '/inicio';
+        } else if (response.status == 401 || response.status == 500) {
         } else {
           new Error(response.json());
         }

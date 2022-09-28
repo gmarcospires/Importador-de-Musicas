@@ -3,20 +3,38 @@ import styles from '../../styles/Home.module.css';
 import React, { useRef, useEffect, Fragment, useState } from 'react';
 import { Notification } from '@mantine/core';
 import { IconCheck } from '@tabler/icons';
+import { getCookies } from 'cookies-next';
 
-import { deleteCookie, getCookies, setCookies } from 'cookies-next';
+import { showNotification } from '@mantine/notifications';
 
 export default function Home(props) {
   const cookies = useRef(props.cookies);
-  const [alterou, setAlterou] = useState(false);
-  // console.log(cookies.current.spotify_auth_state);
+
   useEffect(() => {
     if (cookies.current != undefined) {
       if (cookies.current.access_token_spotify) {
-        setAlterou(true);
+        // setAlterou(true);
+        showNotification({
+          id: 'hello-there-spotify',
+          autoClose: 3000,
+          icon: <IconCheck />,
+          className: 'my-notification-class',
+          loading: false,
+          title: 'Sucesso!',
+          message: ' Login com sucesso em Spotify!',
+        });
       }
       if (cookies.current.access_token_deezer) {
-        setAlterou(true);
+        // setAlterou(true);
+        showNotification({
+          id: 'hello-there-deezer',
+          autoClose: 3000,
+          icon: <IconCheck />,
+          className: 'my-notification-class',
+          loading: false,
+          title: 'Sucesso!',
+          message: ' Login com sucesso em Deezer!',
+        });
       }
     } else {
       // if (alterou) {
@@ -48,28 +66,6 @@ export default function Home(props) {
           </Button>
         ) : null}
       </div>
-
-      {alterou ? (
-        <Notification
-          icon={<IconCheck size={18} />}
-          color='teal'
-          title='Sucesso!'
-          style={{
-            position: 'fixed',
-            bottom: 100,
-            right: 0,
-            margin: 10,
-            height: 100,
-            width: 300,
-          }}
-          closeButtonProps={{
-            'aria-label': 'Hide notification',
-            title: 'Fechar',
-          }}
-        >
-          Login com sucesso!
-        </Notification>
-      ) : null}
     </main>
   );
 }

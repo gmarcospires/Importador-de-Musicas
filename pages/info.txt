@@ -11,8 +11,11 @@ pages/api/transferencia =>
         1. "track:'Something Got Between Us - Harvey Sutherland Remix' artist:'The Jungle Giants' album:'Something Got Between Us Harvey Sutherland Remix'"
 
 pages/_app.js => 
-    - PROVIDER para openLoginModal
+    - PROVIDER para openLoginModal (ok)
     - PROVIDER para children Modal ????
 
 pages/api/*/add/playlist
     - Setar nova playlist como (N)Public e Collaborative
+
+modal =>
+    - props.cookies

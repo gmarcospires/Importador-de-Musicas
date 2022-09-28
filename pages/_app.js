@@ -1,57 +1,59 @@
 import '../styles/globals.css';
 import Head from 'next/head';
 import Footer from '../components/Footer';
+import ModalComponent from '../components/Modal';
 import styles from '../styles/Home.module.css';
-import Page from './inicio';
-import { useState } from 'react';
-import { Modal, useMantineTheme } from '@mantine/core';
-import { getCookies } from 'cookies-next';
 
-function MyApp({ Component, pageProps, cookies }) {
-  const [openedLoginModal, setOpenedLoginModal] = useState(false);
+import { useState } from 'react';
+import {
+  useMantineTheme,
+  MantineProvider,
+  ColorSchemeProvider,
+} from '@mantine/core';
+
+import { NotificationsProvider } from '@mantine/notifications';
+import { useColorScheme } from '@mantine/hooks';
+
+import { Provider } from 'react-redux';
+import { store } from '../redux/store';
+
+function MyApp({ Component, pageProps }) {
   const theme = useMantineTheme();
+  const preferredColorScheme = useColorScheme();
+  const [colorScheme, setColorScheme] = useState(preferredColorScheme);
+  const toggleColorScheme = (value) =>
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
   return (
     <>
-      <Head>
-        <title>Transfira Playlits! - Transferir Playlists</title>
-        <meta
-          name='description'
-          content='Transfira músicas do Spotify e Deezer'
-        />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
-      <div className={styles.container}>
-        <Component {...pageProps} />
-      </div>
-      <Footer name='Gmarcospires' href='https://github.com/gmarcospires' />
-      <Modal
-        overlayColor={
-          theme.colorScheme === 'dark'
-            ? theme.colors.dark[9]
-            : theme.colors.gray[2]
-        }
-        overlayOpacity={0.55}
-        overlayBlur={3}
-        opened={openedLoginModal}
-        transition='fade'
-        transitionDuration={600}
-        transitionTimingFunction='ease'
-        onClose={() => {
-          setOpenedLoginModal(false);
-        }}
-        title='Login'
-        centered
-      >
-        <Page cookies={cookies}></Page>
-      </Modal>
+      <Provider store={store}>
+        <ColorSchemeProvider
+          colorScheme={colorScheme}
+          toggleColorScheme={toggleColorScheme}
+        >
+          <MantineProvider theme={theme} withNormalizeCSS withGlobalStyles>
+            <NotificationsProvider>
+              <Head>
+                <title>Transfira Playlits! - Transferir Playlists</title>
+                <meta
+                  name='description'
+                  content='Transfira músicas do Spotify e Deezer'
+                />
+                <link rel='icon' href='/favicon.ico' />
+              </Head>
+              <div className={styles.container}>
+                <Component {...pageProps} />
+              </div>
+              <Footer
+                name='Gmarcospires'
+                href='https://github.com/gmarcospires'
+              />
+              <ModalComponent theme={theme}></ModalComponent>
+            </NotificationsProvider>
+          </MantineProvider>
+        </ColorSchemeProvider>
+      </Provider>
     </>
   );
 }
 
 export default MyApp;
-
-export const getServerSideProps = ({ req, res }) => {
-  return {
-    cookies: getCookies({ req, res }),
-  };
-};
