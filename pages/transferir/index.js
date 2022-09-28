@@ -71,9 +71,9 @@ export default function Home() {
     return await fetch(`api/${origem}/playlists`, options)
       .then((response) => {
         if (response.status == 200) {
-          dispatch(toggleModal(modalLogin));
           return response.json();
-        } else if (response.status == 401 || response.status == 500) {
+        } else if (response.status == 401) {
+          dispatch(toggleModal(modalLogin));
         } else {
           new Error(response.json());
         }
