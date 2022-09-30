@@ -16,7 +16,6 @@ export default function Home(props) {
   const modalLogin = useSelector((state) => state.modal.value);
   const dispatch = useDispatch();
   const theme = props.theme;
-  console.log(props);
   return (
     <Modal
       id='modalLogin'

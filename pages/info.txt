@@ -1,12 +1,17 @@
 deezer/playlists = spotify/playlists
 
 // TODO:
+Reposta após a transferência
 pages/api/transferencia =>
-    - Verificar se a musica ja existe na playlist de destino
+    - Otimizar passando mais de uma uri para add/playlist
+    - Pensar em transferir pela identificação única da música irsc (+ 1 passo) 
+    - Verificar se a musica ja existe na playlist de destino (Principalmente Spotify)
     - Types que não existem no destino/origem e vice versa 
     - Verificar localidade do usuário
     - Ajustar para não ter ' " em qualquer lugar da query (ok) 
         1. "track:'I'm with You' artist:'Vance Joy'"
+    - Ajustar para procurar pelo primeiro nome do artista
+        1. "track:'Wonderland' artist:'Taylor Swift'"
     - Ajustar para pegar o album
         1. "track:'Something Got Between Us - Harvey Sutherland Remix' artist:'The Jungle Giants' album:'Something Got Between Us Harvey Sutherland Remix'"
 

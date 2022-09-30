@@ -109,8 +109,7 @@ export default function Home() {
         if (response.status == 200) {
           return response.json();
         } else if (response.status == 401) {
-          alert('Você precisa Logar novamente!');
-          window.location.href = '/inicio';
+          dispatch(toggleModal(modalLogin));
         } else {
           new Error(response.json());
         }
@@ -136,8 +135,7 @@ export default function Home() {
         if (response.status == 200) {
           return response.json();
         } else if (response.status == 401) {
-          alert('Você precisa Logar novamente!');
-          window.location.href = '/inicio';
+          dispatch(toggleModal(modalLogin));
         } else {
           new Error(response.json());
         }
@@ -343,6 +341,7 @@ export default function Home() {
         <Button
           disabled={!(plyalistOriginId && plyalistDestinyId)}
           loading={buttonLoading}
+          loaderProps={{ color: 'blue', opacity: 1 }}
           onClick={() => {
             setButtonLoading(true);
             transferir();

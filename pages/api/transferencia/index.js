@@ -80,6 +80,11 @@ export default async function handler(req, res) {
 
   //Passos Destino
   //1 - Procurar as musicas da playlist de origem
+
+  // res.status(200).json({
+  //   resposta: tracks_origem,
+  //   noResponse: [],
+  // });
   console.log('PASSO ORIGEM COMPLETO', tracks_origem.length);
   let respostaSearch = [];
   let noResponse = []; //musicas que nao foram encontradas
@@ -161,10 +166,58 @@ export default async function handler(req, res) {
         ];
       });
   }
+  console.log(
+    'PESQUISA DESTINO COMPLETA',
+    respostaSearch.length,
+    noResponse.length
+  );
+  //2 - Adicionar as musicas na playlist de destino
+  for (const track of respostaSearch) {
+    let musicId = track.id;
+    let uri = track.uri || null;
+    let url = process.env.HOST + 'api/' + destino + '/add/playlist/items';
+  
+    let optionsSearch = {
+      method: 'POST',
+      body: JSON.stringify({
+        playlist_id: id_playlist_destino,
+        uris: uri || musicId,
+        access_token: access_token_destino,
+      }),
+    };
+    await fetch(url, optionsSearch)
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          if (
+            response.json()?.error?.message ==
+            'This song already exists in this playlist'
+          ) {
+            return 1;
+          }
+          throw new Error(
+            JSON.stringify({
+              status: response.status,
+              statusText: response.statusText,
+              jsonResponse: response.json(),
+            })
+          );
+        }
+      })
+      .then((response) => {
+        return 1;
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err.message,
+        });
+      });
+  }
+
   res.status(200).json({
     resposta: respostaSearch,
     noResponse: noResponse,
   });
-
-  //2 - Adicionar as musicas na playlist de destino
 }

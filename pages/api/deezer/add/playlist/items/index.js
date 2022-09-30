@@ -1,5 +1,5 @@
 //Request to add items to playlist
-//URI type -> https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids
+
 import { getCookie } from 'cookies-next';
 
 export default async function handler(req, res) {
@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const access_token =
     getCookie('access_token_deezer', { req, res }) || body.access_token;
   const playlist_id = body.playlist_id;
-  const songs = body.songs; //1522223672, 1174603092
+  const songs = body.uris; //1522223672, 1174603092
 
   const options = {
     method: 'POST',
