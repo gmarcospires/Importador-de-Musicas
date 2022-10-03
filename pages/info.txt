@@ -2,6 +2,7 @@ deezer/playlists = spotify/playlists
 
 // TODO:
 Reposta após a transferência
+CORRIGIR ERRO DE DESLOGAR DO SPOTIFY
 pages/api/transferencia =>
     - Otimizar passando mais de uma uri para add/playlist
     - Pensar em transferir pela identificação única da música irsc (+ 1 passo) 
