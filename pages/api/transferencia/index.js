@@ -59,7 +59,7 @@ export default async function handler(req, res) {
         return 1;
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
         res.status(500).json({
           error: err.message,
         });
@@ -85,7 +85,7 @@ export default async function handler(req, res) {
   //   resposta: tracks_origem,
   //   noResponse: [],
   // });
-  console.log('PASSO ORIGEM COMPLETO', tracks_origem.length);
+  // console.log('PASSO ORIGEM COMPLETO', tracks_origem.length);
   let respostaSearch = [];
   let noResponse = []; //musicas que nao foram encontradas
 
@@ -156,7 +156,7 @@ export default async function handler(req, res) {
         return 1;
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
         noResponse = [
           ...noResponse,
           {
@@ -166,17 +166,17 @@ export default async function handler(req, res) {
         ];
       });
   }
-  console.log(
-    'PESQUISA DESTINO COMPLETA',
-    respostaSearch.length,
-    noResponse.length
-  );
+  // console.log(
+  //   'PESQUISA DESTINO COMPLETA',
+  //   respostaSearch.length,
+  //   noResponse.length
+  // );
   //2 - Adicionar as musicas na playlist de destino
   for (const track of respostaSearch) {
     let musicId = track.id;
     let uri = track.uri || null;
     let url = process.env.HOST + 'api/' + destino + '/add/playlist/items';
-  
+
     let optionsSearch = {
       method: 'POST',
       body: JSON.stringify({
@@ -209,7 +209,7 @@ export default async function handler(req, res) {
         return 1;
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
         res.status(500).json({
           error: err.message,
         });
