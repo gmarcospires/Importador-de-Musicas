@@ -1,9 +1,9 @@
-import Button from '../../components/Button';
 import styles from '../../styles/Home.module.css';
 import React, { useRef, useEffect, Fragment, useState } from 'react';
-import { Notification } from '@mantine/core';
+import { Button, Space } from '@mantine/core';
 import { IconCheck } from '@tabler/icons';
 import { getCookies } from 'cookies-next';
+import Link from 'next/link';
 
 import { showNotification } from '@mantine/notifications';
 
@@ -49,23 +49,30 @@ export default function Home(props) {
     <main className={styles.main}>
       <h1 className={styles.title}>Transfira Playlists!</h1>
       <p className={styles.description}>Transfira Playlits facilmente!</p>
-      <div className={styles.grid}>
+      <div style={{ display: 'flex' }}>
         {!cookies.current || !cookies.current.access_token_spotify ? (
-          <Button href='/api/spotify/login' className={styles.card}>
-            Logar com Spotify
-          </Button>
+          <>
+            <Link href='/api/spotify/login' passHref>
+              <Button size='md'>Logar com Spotify</Button>
+            </Link>
+            <Space w='md' />
+          </>
         ) : null}
         {!cookies.current || !cookies.current.access_token_deezer ? (
-          <Button href='/api/deezer/login' className={styles.card}>
-            Logar com Deezer
-          </Button>
+          <>
+            <Space w='md' />
+            <Link href='/api/deezer/login' passHref>
+              <Button size='md'>Logar com Deezer</Button>
+            </Link>
+          </>
         ) : null}
+
         {cookies.current &&
         cookies.current.access_token_spotify &&
         cookies.current.access_token_deezer ? (
-          <Button href='/transferir' className={styles.card}>
-            Começar a Transferir!
-          </Button>
+          <Link href='/transferir' passHref>
+            <Button component='a'>Começar a Transferir!</Button>
+          </Link>
         ) : null}
       </div>
     </main>

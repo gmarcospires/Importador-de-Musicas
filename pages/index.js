@@ -1,4 +1,5 @@
-import Button from '../components/Button';
+import { Button } from '@mantine/core';
+import Link from 'next/link';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
@@ -7,9 +8,9 @@ export default function Home() {
       <h1 className={styles.title}>Transfira Playlists!</h1>
       <p className={styles.description}>Transfira Playlits facilmente!</p>
       <div className={styles.grid}>
-        <Button href="/inicio" className={styles.card}>
-          Comece agora!
-        </Button>
+        <Link href='/inicio' passHref>
+          <Button component='a'>Comece agora!</Button>
+        </Link>
       </div>
     </main>
   );
