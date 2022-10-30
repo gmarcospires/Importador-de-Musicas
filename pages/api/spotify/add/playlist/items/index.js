@@ -12,8 +12,11 @@ export default async function handler(req, res) {
   const access_token =
     getCookie('access_token_spotify', { req, res }) || body.access_token;
   const playlist_id = body.playlist_id;
-  const uris = body.uris;
+  let uris = body.uris;
 
+  if (typeof uris !== 'object') {
+    uris = [uris];
+  }
   const authOptions = {
     headers: {
       Authorization: 'Bearer ' + access_token,
@@ -21,11 +24,10 @@ export default async function handler(req, res) {
     },
     method: 'POST',
     body: JSON.stringify({
-      uris: [uris],
+      uris: uris,
     }),
   };
   const url = 'https://api.spotify.com/v1/playlists/' + playlist_id + '/tracks';
-
   const resposta = await fetch(url, authOptions)
     .then((response) => {
       if (response.status === 201 || response.status === 200) {
