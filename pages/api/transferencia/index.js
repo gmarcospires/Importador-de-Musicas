@@ -88,6 +88,7 @@ export default async function handler(req, res) {
   console.log('PASSO ORIGEM COMPLETO', tracks_origem.length);
   let respostaSearch = [];
   let noResponse = []; //musicas que nao foram encontradas
+  let tracksResposta = [];
 
   //   // DEEZER
   //   // query "album" "artist" "track"
@@ -113,9 +114,10 @@ export default async function handler(req, res) {
       musicName.replace(/[\']+/g, '') +
       "' artist:'" +
       artistName.replace(/[\']+/g, '') +
-      // "' album:'" +
-      // albumName +
+      "' album:'" +
+      albumName.replace(/[\']+/g, '') +
       "'";
+
     let optionsSearch = {
       method: 'POST',
       body: JSON.stringify({
@@ -144,6 +146,14 @@ export default async function handler(req, res) {
         let resposta = jsonResponse['data'] || jsonResponse['tracks']['items'];
         if (resposta.length) {
           respostaSearch = [...respostaSearch, ...resposta];
+          tracksResposta.push({
+            musicName: musicName,
+            artistName: artistName,
+            albumName: albumName,
+            query: query,
+            status: 'OK',
+            id: track.id,
+          });
         } else {
           noResponse = [
             ...noResponse,
@@ -152,6 +162,14 @@ export default async function handler(req, res) {
               response: jsonResponse,
             },
           ];
+          tracksResposta.push({
+            musicName: musicName,
+            artistName: artistName,
+            albumName: albumName,
+            query: query,
+            status: 'NOT FOUND',
+            id: track.id,
+          });
         }
         return 1;
       })
@@ -215,9 +233,12 @@ export default async function handler(req, res) {
         });
       });
   }
-
+  tracksResposta = tracksResposta.sort((a, b) => {
+    if (a.status == 'OK' && b.status == 'NOT FOUND') return 1;
+    if (a.status == 'NOT FOUND' && b.status == 'OK') return -1;
+    return 0;
+  });
   res.status(200).json({
-    resposta: respostaSearch,
-    noResponse: noResponse,
+    tracksResposta: tracksResposta,
   });
 }

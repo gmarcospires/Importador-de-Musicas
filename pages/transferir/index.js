@@ -1,26 +1,35 @@
-import styles from '../../styles/Home.module.css';
 import {
+  ActionIcon,
   Box,
-  Select,
-  Loader,
+  Button,
+  Checkbox,
   Grid,
   Group,
   Image,
-  Text,
+  Loader,
   Modal,
-  Button,
-  ActionIcon,
+  ScrollArea,
+  Select,
+  Text,
   TextInput,
+  Tooltip,
   useMantineTheme,
-  Checkbox,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconPlus } from '@tabler/icons';
+import {
+  IconCameraOff,
+  IconCheck,
+  IconInfoCircle,
+  IconPlus,
+} from '@tabler/icons';
+import { forwardRef, useEffect, useState } from 'react';
 import { servicos } from '../../js/servicos';
-import { useState, useEffect, useRef, forwardRef } from 'react';
+import styles from '../../styles/Home.module.css';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { Avatar, QRCode, Table } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
 import { toggleModal } from '../../redux/features/modal/modalSlice';
+import * as XLSX from 'xlsx';
 
 export default function Home() {
   const modalLogin = useSelector((state) => state.modal.value);
@@ -31,25 +40,48 @@ export default function Home() {
   const [valueOrigin, setValueOrigin] = useState('');
 
   const [playlistsOrigin, setPlaylistsOrigin] = useState([]);
-  const [playlistsDestiny, setPlaylistsDestiny] = useState([]);
   const [showplaylistOrigin, setShowplaylistOrigin] = useState(false);
   const [loaderPlaylistOrigin, setLoaderPlaylistOrigin] = useState(true);
+  const [plyalistOriginId, setPlyalistOriginId] = useState('');
+
+  const [playlistsDestiny, setPlaylistsDestiny] = useState([]);
   const [showplaylistDestiny, setShowplaylistDestiny] = useState(false);
   const [loaderPlaylistDestiny, setLoaderPlaylistDestiny] = useState(true);
-
-  const [plyalistOriginId, setPlyalistOriginId] = useState('');
   const [plyalistDestinyId, setPlyalistDestinyId] = useState('');
+  const [plyalistDestinyLink, setPlyalistDestinyLink] = useState('');
 
   const [buttonLoading, setButtonLoading] = useState(false);
 
   const [opened, setOpened] = useState(false);
   const [buttonLoadingForm, setButtonLoadingForm] = useState(false);
 
+  const [openedModalMusic, setOpenedModalMusic] = useState(false);
+  const [dataSourceModal, setDataSourceModal] = useState([]);
+  const [dataSource, setDataSource] = useState([]);
+  const [transferenciaConcluida, setTransferenciaConcluida] = useState(false);
+
+  const [clickedItem, setClickedItem] = useState(null);
+  const onSelectChange = (newSelectedRowKeys) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const [loadingTable, setLoadingTable] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
   const SelectItem = forwardRef(
     ({ image, label, description, ...others }, ref) => (
       <div ref={ref} {...others}>
         <Group noWrap>
-          <Image withPlaceholder src={image} width={25} fit='cover' />
+          <Image
+            withPlaceholder
+            src={image}
+            width={25}
+            fit='cover'
+            alt='Servivce Image'
+          />
           <div>
             <Text size='sm'>{label}</Text>
             <Text size='xs' color='dimmed'>
@@ -86,7 +118,11 @@ export default function Home() {
         data.forEach((dado) => {
           playlists = [
             ...playlists,
-            { value: dado.id, label: dado.name || dado.title },
+            {
+              value: dado.id,
+              label: dado.name || dado.title,
+              link: dado?.external_urls?.spotify || dado.link || null,
+            },
           ];
         });
         return playlists;
@@ -142,8 +178,12 @@ export default function Home() {
       })
       .then((data) => {
         setPlaylistsDestiny([
+          {
+            value: data['id'],
+            label: formData.playlist_name,
+            link: data?.external_urls?.spotify || dado.link || null,
+          },
           ...playlistsDestiny,
-          { value: data['id'], label: formData.playlist_name },
         ]);
         setOpened(false);
       })
@@ -166,6 +206,10 @@ export default function Home() {
     } else {
       setLoaderPlaylistDestiny(false);
       setShowplaylistDestiny(false);
+      setClickedItem(null);
+      setSelectedRowKeys([]);
+      setDataSource([]);
+      setTransferenciaConcluida(false);
     }
   }, [valueDestiny]);
 
@@ -180,8 +224,33 @@ export default function Home() {
     } else {
       setLoaderPlaylistOrigin(false);
       setShowplaylistOrigin(false);
+      setClickedItem(null);
+      setSelectedRowKeys([]);
+      setDataSource([]);
+      setTransferenciaConcluida(false);
     }
   }, [valueOrigin]);
+
+  useEffect(() => {
+    return () => {
+      setLoaderPlaylistDestiny(false);
+      setShowplaylistDestiny(false);
+      setClickedItem(null);
+      setSelectedRowKeys([]);
+      setDataSource([]);
+      setTransferenciaConcluida(false);
+      setDataSourceModal([]);
+      setOpenedModalMusic(false);
+      setValueDestiny('');
+      setValueOrigin('');
+      setPlaylistsOrigin([]);
+      setPlaylistsDestiny([]);
+      setPlyalistOriginId('');
+      setPlyalistDestinyId('');
+      setTransferenciaConcluida(false);
+      setOpened(false);
+    };
+  }, []);
 
   const form = useForm({
     initialValues: {
@@ -196,6 +265,14 @@ export default function Home() {
         !value.playlist_name.trim() && 'Nome da Playlist é obrigatório',
     }),
   });
+  useEffect(() => {
+    if (!plyalistOriginId || !plyalistDestinyId) {
+      setClickedItem(null);
+      setSelectedRowKeys([]);
+      setDataSource([]);
+      setTransferenciaConcluida(false);
+    }
+  }, [plyalistOriginId, plyalistDestinyId]);
 
   async function transferir() {
     const options = {
@@ -219,7 +296,10 @@ export default function Home() {
         }
       })
       .then((data) => {
-        console.log(data);
+        if (data['tracksResposta']) {
+          setDataSource(data['tracksResposta']);
+          setTransferenciaConcluida(true);
+        }
       })
       .finally(() => {
         setButtonLoading(false);
@@ -228,8 +308,42 @@ export default function Home() {
         console.log(error);
       });
   }
+  const onClickAddMusic = () => {
+    selectedRowKeys.forEach((key) => {
+      const uri = dataSourceModal.find((item) => item.id == key).uri;
+      fetch(`api/${valueDestiny}/add/playlist/items`, {
+        method: 'POST',
+        body: JSON.stringify({
+          playlist_id: plyalistDestinyId,
+          uris: uri,
+        }),
+      })
+        .then((response) => {
+          if (response.status == 200) {
+            return response.json();
+          } else if (response.status == 401) {
+            dispatch(toggleModal(modalLogin));
+          } else {
+            new Error(response.json());
+          }
+        })
+        .then((data) => {
+          const item = dataSource.find((item) => item.id == clickedItem);
+          if (item) {
+            item.status = 'OK';
+            setDataSource([...dataSource]);
+          }
+        })
+        .finally(() => {});
+      setSelectedRowKeys([]);
+      setDataSourceModal([]);
+      setClickedItem(null);
+      setOpenedModalMusic(false);
+    });
+  };
   return (
-    <main className={styles.main}>
+    <main className={styles.main} style={{ gap: '2rem' }}>
+      <ScrollArea></ScrollArea>
       <h1>Transferência</h1>
       <Box
         sx={(theme) => ({
@@ -317,7 +431,12 @@ export default function Home() {
                     data={playlistsDestiny}
                     maxDropdownHeight={280}
                     value={plyalistDestinyId}
-                    onChange={setPlyalistDestinyId}
+                    onChange={(val) => {
+                      setPlyalistDestinyId(val);
+                      setPlyalistDestinyLink(
+                        playlistsDestiny.find((x) => x.value == val)?.link ?? ''
+                      );
+                    }}
                     transition='skew-down'
                     transitionDuration={80}
                     searchable
@@ -350,6 +469,242 @@ export default function Home() {
           Transferir
         </Button>
       </Box>
+
+      {transferenciaConcluida && dataSource.length > 0 && (
+        <>
+          {plyalistDestinyLink ? (
+            <>
+              <QRCode value={plyalistDestinyLink} /> {plyalistDestinyLink}{' '}
+            </>
+          ) : null}
+
+          <Table
+            width='100%'
+            height='100%'
+            title={() => (
+              <Button
+                size='xs'
+                onClick={() => {
+                  const ws = XLSX.utils.json_to_sheet(
+                    dataSource.filter((x) => x.status !== 'OK')
+                  );
+                  const wb = XLSX.utils.book_new();
+                  XLSX.utils.book_append_sheet(wb, ws, 'Não Transferidos');
+                  const ws2 = XLSX.utils.json_to_sheet(
+                    dataSource.filter((x) => x.status === 'OK')
+                  );
+                  XLSX.utils.book_append_sheet(wb, ws2, 'Transferidos');
+                  XLSX.writeFile(wb, 'Exportação.xlsx');
+                }}
+              >
+                Exportar
+              </Button>
+            )}
+            dataSource={dataSource || []}
+            columns={[
+              {
+                title: 'Título',
+                dataIndex: 'musicName',
+                key: 'musicName',
+                sorter: (a, b) => a.musicName.localeCompare(b.musicName),
+              },
+              {
+                title: 'Artista',
+                dataIndex: 'artistName',
+                key: 'artistName',
+                sorter: (a, b) => a.artistName.localeCompare(b.artistName),
+              },
+              {
+                title: 'Album',
+                dataIndex: 'albumName',
+                key: 'albumName',
+                sorter: (a, b) => a.albumName.localeCompare(b.albumName),
+              },
+              {
+                title: 'Situação',
+                dataIndex: 'status',
+                key: 'status',
+                render: (text, record, index) => {
+                  if (record.status === 'NOT FOUND') {
+                    return (
+                      <Tooltip title={`Música não encontrada! :(`}>
+                        <IconInfoCircle key={index} size={16} color='red' />
+                      </Tooltip>
+                    );
+                  } else {
+                    return (
+                      <Tooltip title={`Música encontrada e Transferida! :)`}>
+                        <IconCheck key={index} size={16} color='green' />
+                      </Tooltip>
+                    );
+                  }
+                },
+                sorter: (a, b) => a.status.localeCompare(b.status),
+                defaultSortOrder: 'ascend',
+                filters: [
+                  {
+                    text: 'Encontrada',
+                    value: 'OK',
+                  },
+                  {
+                    text: 'Não Encontrada',
+                    value: 'NOT FOUND',
+                  },
+                ],
+                onFilter: (value, record) => record.status.indexOf(value) === 0,
+                onCell: (record, rowIndex) => ({
+                  onClick: async () => {
+                    if (record.status === 'NOT FOUND') {
+                      const query =
+                        "track:'" +
+                        record.musicName.replace(/[\']+/g, '') +
+                        "' artist:'" +
+                        record.artistName.replace(/[\']+/g, '') +
+                        "'";
+
+                      const data = await fetch(
+                        'api/' + valueDestiny + '/search',
+                        {
+                          method: 'POST',
+                          body: JSON.stringify({
+                            query: query,
+                            type: 'track',
+                            limit: 10,
+                            offset: 0,
+                          }),
+                        }
+                      )
+                        .then((response) => {
+                          return response.json();
+                        })
+                        .then((resp) => {
+                          return resp.tracks.items.map((item) => {
+                            return {
+                              id: item.id,
+                              musicName: item.name,
+                              artistName: item.artists[0].name,
+                              albumName: item.album.name,
+                              image: item.album.images[0].url || '',
+                              uri: item.uri || item.id,
+                            };
+                          });
+                        });
+                      setClickedItem(record.id);
+                      setOpenedModalMusic(true);
+                      setDataSourceModal(data);
+                    }
+                  },
+                  onDoubleClick: (record) => {
+                    navigator.clipboard.writeText(
+                      record.musicName +
+                        ' ' +
+                        record.artistName +
+                        ' ' +
+                        record.albumName
+                    );
+                  },
+                }),
+              },
+            ]}
+            pagination={{
+              position: ['topRight', 'bottomRight'],
+              defaultPageSize: 10,
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} de ${total}`,
+              pageSizeOptions: ['10', '20', '50', '100'],
+              total: dataSource.length,
+            }}
+            loading={false}
+            rowKey={(record) => record.id}
+          />
+        </>
+      )}
+      <Modal
+        overlayColor={
+          theme.colorScheme === 'dark'
+            ? theme.colors.dark[9]
+            : theme.colors.gray[2]
+        }
+        size={'lg'}
+        overlayOpacity={0.55}
+        overlayBlur={3}
+        opened={openedModalMusic}
+        transition='fade'
+        transitionDuration={600}
+        transitionTimingFunction='ease'
+        onClose={() => {
+          setOpenedModalMusic(false);
+          setSelectedRowKeys([]);
+          setClickedItem(null);
+          setDataSourceModal([]);
+        }}
+        title='Músicas Encontradas'
+        centered
+      >
+        <div>
+          <div style={{ marginBottom: 16 }}>
+            <Button
+              type='primary'
+              onClick={() => {
+                onClickAddMusic();
+              }}
+              disabled={!selectedRowKeys.length}
+            >
+              Adicionar músicas
+            </Button>
+            <span style={{ marginLeft: 8 }}>
+              {selectedRowKeys.length
+                ? `Selecionado ${selectedRowKeys.length} items`
+                : ''}
+            </span>
+          </div>
+          <Table
+            dataSource={dataSourceModal || []}
+            columns={[
+              {
+                title: '',
+                dataIndex: 'image',
+                key: 'image',
+                render: (text, record, index) => {
+                  return (
+                    <Avatar
+                      key={index}
+                      shape='square'
+                      size={64}
+                      icon={
+                        text ? (
+                          <Image src={text} alt='Capa do Álbum' />
+                        ) : (
+                          <IconCameraOff />
+                        )
+                      }
+                    />
+                  );
+                },
+              },
+              {
+                title: 'Título',
+                dataIndex: 'musicName',
+                key: 'musicName',
+              },
+              {
+                title: 'Artista',
+                dataIndex: 'artistName',
+                key: 'artistName',
+              },
+              {
+                title: 'Album',
+                dataIndex: 'albumName',
+                key: 'albumName',
+              },
+            ]}
+            pagination={false}
+            loading={false}
+            rowKey={(record) => record.id}
+            rowSelection={rowSelection}
+          />
+        </div>
+      </Modal>
       <Modal
         overlayColor={
           theme.colorScheme === 'dark'
