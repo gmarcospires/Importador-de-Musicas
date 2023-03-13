@@ -231,26 +231,26 @@ export default function Home() {
     }
   }, [valueOrigin]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     setLoaderPlaylistDestiny(false);
-  //     setShowplaylistDestiny(false);
-  //     setClickedItem(null);
-  //     setSelectedRowKeys([]);
-  //     setDataSource([]);
-  //     setTransferenciaConcluida(false);
-  //     setDataSourceModal([]);
-  //     setOpenedModalMusic(false);
-  //     setValueDestiny('');
-  //     setValueOrigin('');
-  //     setPlaylistsOrigin([]);
-  //     setPlaylistsDestiny([]);
-  //     setPlyalistOriginId('');
-  //     setPlyalistDestinyId('');
-  //     setTransferenciaConcluida(false);
-  //     setOpened(false);
-  //   };
-  // }, []);
+  useEffect(() => {
+    return () => {
+      setLoaderPlaylistDestiny(false);
+      setShowplaylistDestiny(false);
+      setClickedItem(null);
+      setSelectedRowKeys([]);
+      setDataSource([]);
+      setTransferenciaConcluida(false);
+      setDataSourceModal([]);
+      setOpenedModalMusic(false);
+      setValueDestiny('');
+      setValueOrigin('');
+      setPlaylistsOrigin([]);
+      setPlaylistsDestiny([]);
+      setPlyalistOriginId('');
+      setPlyalistDestinyId('');
+      setTransferenciaConcluida(false);
+      setOpened(false);
+    };
+  }, []);
 
   const form = useForm({
     initialValues: {
