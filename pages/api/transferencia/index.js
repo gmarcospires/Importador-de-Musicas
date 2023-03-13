@@ -27,12 +27,12 @@ export default async function handler(req, res) {
   const link = process.env.HOST + 'api/' + origem + '/playlist/tracks';
 
   do {
-    offset = qtd_paginas * 20;
+    offset = qtd_paginas * 100;
     let options = {
       method: 'POST',
       body: JSON.stringify({
         playlist_id: id_playlist_origem,
-        limit: 20,
+        limit: 100,
         offset: offset,
         access_token: access_token_origem,
       }),
@@ -81,10 +81,6 @@ export default async function handler(req, res) {
   //Passos Destino
   //1 - Procurar as musicas da playlist de origem
 
-  // res.status(200).json({
-  //   resposta: tracks_origem,
-  //   noResponse: [],
-  // });
   console.log('PASSO ORIGEM COMPLETO', tracks_origem.length);
   let respostaSearch = [];
   let noResponse = []; //musicas que nao foram encontradas
@@ -146,13 +142,24 @@ export default async function handler(req, res) {
         let resposta = jsonResponse['data'] || jsonResponse['tracks']['items'];
         if (resposta.length) {
           respostaSearch = [...respostaSearch, ...resposta];
+          let id_destiny = undefined;
+          let uri = undefined;
+          Object.entries(resposta[0]).forEach(([key, value]) => {
+            if (key === 'id') {
+              id_destiny = value;
+            }
+            if (key === 'uri') {
+              uri = value;
+            }
+          });
           tracksResposta.push({
             musicName: musicName,
             artistName: artistName,
             albumName: albumName,
             query: query,
             status: 'OK',
-            id: track.id,
+            id: id_destiny,
+            uri: uri,
           });
         } else {
           noResponse = [
@@ -169,6 +176,7 @@ export default async function handler(req, res) {
             query: query,
             status: 'NOT FOUND',
             id: track.id,
+            uri: undefined,
           });
         }
         return 1;
@@ -189,21 +197,93 @@ export default async function handler(req, res) {
     respostaSearch.length,
     noResponse.length
   );
+  //Pesquisa de id no destino, evitando duplicados
+  let tracks_destiny_duplicados = [];
+  let qtd_paginas_now = 0;
+  let offset_now = 0;
+  let ultima_pagina_now = {};
+  const link_now = process.env.HOST + 'api/' + destino + '/playlist/tracks';
+
+  do {
+    offset_now = qtd_paginas_now * 100;
+    let options = {
+      method: 'POST',
+      body: JSON.stringify({
+        playlist_id: id_playlist_destino,
+        limit: 100,
+        offset: offset_now,
+        access_token: access_token_destino,
+      }),
+    };
+
+    await fetch(link_now, options)
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          throw new Error(
+            JSON.stringify({
+              status: response.status,
+              statusText: response.statusText,
+            })
+          );
+        }
+      })
+      .then((jsonResponse) => {
+        ultima_pagina_now = jsonResponse;
+        let resposta = jsonResponse['data'] || jsonResponse['items'];
+        for (const track of resposta) {
+          if (track.track.id) {
+            tracksResposta.find((item, index) => {
+              if (item.id === track.track.id) {
+                if (item.status === 'OK') {
+                  tracks_destiny_duplicados.push(item);
+                  tracksResposta[index] = {
+                    ...item,
+                    status: 'DUPLICATED',
+                  };
+                }
+              }
+            });
+          }
+        }
+        return 1;
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err.message,
+        });
+      });
+    qtd_paginas_now++;
+  } while (ultima_pagina_now['next']);
+
+  console.log('DUPLICADOS', tracks_destiny_duplicados.length);
+
   //2 - Adicionar as musicas na playlist de destino
-  for (const track of respostaSearch) {
-    let musicId = track.id;
-    let uri = track.uri || null;
-    let url = process.env.HOST + 'api/' + destino + '/add/playlist/items';
+  const url_destiny_add =
+    process.env.HOST + 'api/' + destino + '/add/playlist/items';
+
+  for (
+    let idx = 0;
+    idx < tracksResposta.filter((item) => item.status === 'OK').length;
+    idx += 100
+  ) {
+    let tracks = tracksResposta
+      .filter((item) => item.status === 'OK')
+      .slice(idx, idx + 100);
+    let musicId = tracks.map((item) => item.id);
+    let uri = tracks.map((item) => item.uri);
 
     let optionsSearch = {
       method: 'POST',
       body: JSON.stringify({
         playlist_id: id_playlist_destino,
-        uris: uri || musicId,
+        uris: uri ? uri.join(',') : musicId.join(','),
         access_token: access_token_destino,
       }),
     };
-    await fetch(url, optionsSearch)
+    await fetch(url_destiny_add, optionsSearch)
       .then((response) => {
         if (response.status === 200) {
           return response.json();
@@ -223,9 +303,6 @@ export default async function handler(req, res) {
           );
         }
       })
-      .then((response) => {
-        return 1;
-      })
       .catch((err) => {
         console.log(err);
         res.status(500).json({
@@ -233,6 +310,7 @@ export default async function handler(req, res) {
         });
       });
   }
+
   tracksResposta = tracksResposta.sort((a, b) => {
     if (a.status == 'OK' && b.status == 'NOT FOUND') return 1;
     if (a.status == 'NOT FOUND' && b.status == 'OK') return -1;

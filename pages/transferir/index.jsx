@@ -231,26 +231,26 @@ export default function Home() {
     }
   }, [valueOrigin]);
 
-  useEffect(() => {
-    return () => {
-      setLoaderPlaylistDestiny(false);
-      setShowplaylistDestiny(false);
-      setClickedItem(null);
-      setSelectedRowKeys([]);
-      setDataSource([]);
-      setTransferenciaConcluida(false);
-      setDataSourceModal([]);
-      setOpenedModalMusic(false);
-      setValueDestiny('');
-      setValueOrigin('');
-      setPlaylistsOrigin([]);
-      setPlaylistsDestiny([]);
-      setPlyalistOriginId('');
-      setPlyalistDestinyId('');
-      setTransferenciaConcluida(false);
-      setOpened(false);
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     setLoaderPlaylistDestiny(false);
+  //     setShowplaylistDestiny(false);
+  //     setClickedItem(null);
+  //     setSelectedRowKeys([]);
+  //     setDataSource([]);
+  //     setTransferenciaConcluida(false);
+  //     setDataSourceModal([]);
+  //     setOpenedModalMusic(false);
+  //     setValueDestiny('');
+  //     setValueOrigin('');
+  //     setPlaylistsOrigin([]);
+  //     setPlaylistsDestiny([]);
+  //     setPlyalistOriginId('');
+  //     setPlyalistDestinyId('');
+  //     setTransferenciaConcluida(false);
+  //     setOpened(false);
+  //   };
+  // }, []);
 
   const form = useForm({
     initialValues: {
@@ -462,6 +462,7 @@ export default function Home() {
           loading={buttonLoading}
           loaderProps={{ color: 'blue', opacity: 1 }}
           onClick={() => {
+            setDataSource([]);
             setButtonLoading(true);
             transferir();
           }}
@@ -486,12 +487,12 @@ export default function Home() {
                 size='xs'
                 onClick={() => {
                   const ws = XLSX.utils.json_to_sheet(
-                    dataSource.filter((x) => x.status !== 'OK')
+                    dataSource.filter((x) => x.status === 'NOT FOUND')
                   );
                   const wb = XLSX.utils.book_new();
                   XLSX.utils.book_append_sheet(wb, ws, 'Não Transferidos');
                   const ws2 = XLSX.utils.json_to_sheet(
-                    dataSource.filter((x) => x.status === 'OK')
+                    dataSource.filter((x) => x.status !== 'NOT FOUND')
                   );
                   XLSX.utils.book_append_sheet(wb, ws2, 'Transferidos');
                   XLSX.writeFile(wb, 'Exportação.xlsx');
@@ -531,13 +532,18 @@ export default function Home() {
                         <IconInfoCircle key={index} size={16} color='red' />
                       </Tooltip>
                     );
-                  } else {
+                  } else if (record.status === 'DUPLICATED') {
+                    return (
+                      <Tooltip title={`Música já existe na playlist! :(`}>
+                        <IconCheck key={index} size={16} color='orange' />
+                      </Tooltip>
+                    );
+                  } else
                     return (
                       <Tooltip title={`Música encontrada e Transferida! :)`}>
                         <IconCheck key={index} size={16} color='green' />
                       </Tooltip>
                     );
-                  }
                 },
                 sorter: (a, b) => a.status.localeCompare(b.status),
                 defaultSortOrder: 'ascend',
@@ -549,6 +555,10 @@ export default function Home() {
                   {
                     text: 'Não Encontrada',
                     value: 'NOT FOUND',
+                  },
+                  {
+                    text: 'Duplicada',
+                    value: 'DUPLICATED',
                   },
                 ],
                 onFilter: (value, record) => record.status.indexOf(value) === 0,
@@ -613,6 +623,26 @@ export default function Home() {
                 `${range[0]}-${range[1]} de ${total}`,
               pageSizeOptions: ['10', '20', '50', '100'],
               total: dataSource.length,
+              locale: {
+                items_per_page: '/ página',
+                jump_to_confirm: 'Confirmar',
+                prev_page: 'Página Anterior',
+                next_page: 'Próxima Página',
+              },
+            }}
+            locale={{
+              sortTitle: 'Ordenar',
+              filterTitle: 'Filtros',
+              filterConfirm: 'Filtrar',
+              filterReset: 'Limpar',
+              emptyText: 'Nenhum registro encontrado',
+              selectAll: 'Selecionar Tudo',
+              selectInvert: 'Inverter Seleção',
+              filterCheckall: 'Selecionar Tudo',
+              filterSearchPlaceholder: 'Pesquisar',
+              triggerAsc: 'Ordenar Crescente',
+              triggerDesc: 'Ordenar Decrescente',
+              cancelSort: 'Cancelar Ordenação',
             }}
             loading={false}
             rowKey={(record) => record.id}
